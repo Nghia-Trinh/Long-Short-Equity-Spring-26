@@ -1,0 +1,16 @@
+{
+    "lambda_ewma": 0.94,
+    "lambda_risk_aversion": 1.0,
+    "transaction_cost": 0.001,
+    "holding_period_days": 10,
+    "max_leverage": 2.0,
+    "max_position_pct": 0.05,
+    "min_adv_participation": 0.01,
+    "ewma_min_periods": 60,
+    "sue_lookback_quarters": 8,
+    "start_date": "2018-01-01",
+    "end_date": "2025-12-31",
+    "initial_capital": 1000000,
+    "universe_exclude_top_n_largecap": 500,
+    "universe_min_dollar_volume": 1000000
+}
