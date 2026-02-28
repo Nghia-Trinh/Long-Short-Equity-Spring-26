@@ -1,0 +1,41 @@
+SUE Distribution
+----------------
+This histogram summarizes standardized earnings surprises for A. Across available events, SUE has mean 1.399, standard deviation 1.395, and skew 0.690, which indicates whether positive or negative outliers dominate. The positive-rate is 85.0%, so you can quickly assess directional balance in earnings signal realizations.
+
+The most recent SUE is 0.230 with raw surprise 0.010. If this latest point lies in a tail of the distribution relative to prior events, it generally reflects a higher-conviction earnings signal and is worth cross-checking against subsequent price response and portfolio-level spread behavior.
+
+SUE vs Price Overlay
+--------------------
+This overlay compares event-timed SUE bars with the daily adjusted price path for A. Use it to visually test whether large positive/negative SUE observations are followed by directional price continuation or reversal in the surrounding window.
+
+Given latest SUE 0.230, interpret the newest bar relative to price context: if extreme SUE values repeatedly align with durable moves, that supports signal relevance; if responses are noisy or mean-reverting, it suggests weaker single-name predictability and greater importance of cross-sectional portfolio construction.
+
+Alpha Heatmap
+-------------
+The heatmap shows cross-sectional alpha values across 24 rebalance dates (2024-03-31 to 2026-02-28) and 468 tickers. Dense color contrast indicates broad cross-sectional differentiation, which is desirable for ranking and long-short selection.
+
+Because rows are z-scored, each date is centered and scaled comparably. This means visual regime shifts mostly reflect changes in relative ordering and dispersion, not level drift, making the chart useful for checking whether signal structure is stable over time.
+
+Alpha Heatmap (Random 20)
+-------------------------
+This companion heatmap shows a random sample of 20 tickers from the same alpha matrix window, making single-name color patterns easier to inspect than the full-universe view. Sample tickers include WAB, FLUT, CMCSA, ADP, A, GLW, TFC, RVMD, DECK, CW, ....
+
+Use this view for visual spot-checks of row-wise cross-sectional differentiation and temporal consistency in ranking structure. Because values remain z-scored by date, interpretation is directly comparable to the full heatmap while being more readable at the individual ticker level.
+
+Alpha Signal Strength
+---------------------
+Signal-strength tracks mean absolute alpha per date. In this run, average mean-absolute-alpha is 0.414 and average cross-sectional std is 1.000, which indicates how strongly names are separated each rebalance.
+
+The average first-difference trend of signal strength is -0.0022 per step. Persistent decline can indicate crowding/noise, while stable or rising values suggest the model continues to produce meaningful cross-sectional dispersion for portfolio formation.
+
+Alpha Long/Short Spread
+-----------------------
+This chart measures top-20% minus bottom-20% alpha spread each rebalance as a proxy for long-short separation quality. The spread averages 1.713 with std 0.593, and is positive on 100.0% of dates.
+
+Higher and stable spread suggests cleaner ranking separation between high-conviction longs and shorts. Compression or oscillation in spread often flags weaker signal discrimination and should be monitored alongside transaction costs and turnover constraints.
+
+Alpha Matrix Snapshot
+---------------------
+The snapshot table provides an auditable slice of matrix values used by the optimizer and makes it easy to inspect exact entries. On the latest date, top names include MRVL, FTV, FFIV, ALL, AFL and bottom names include SNDK, FISV, GEV, ORCL, PTC based on alpha ranking.
+
+This table is especially useful for sanity checks (missing values, extreme outliers, sign consistency) and for validating that exported data aligns with the plotted trends before portfolio optimization or reporting.

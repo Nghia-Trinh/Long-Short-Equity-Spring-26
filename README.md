@@ -106,6 +106,20 @@ Uses `main.py` as the algorithm entry point.
 ### Option C: QuantConnect Cloud
 Upload the entire project directory via quantconnect.com → Projects → Upload.
 
+### Option D: Alpha Artifact Pack (charts + Excel)
+```bash
+python Alpha/__init__.py --max-tickers 25 --keep-latest-charts 1 --keep-latest-excel 1
+```
+
+All available tickers with strict cleanup:
+```bash
+python Alpha/__init__.py --all-tickers --no-show --keep-latest-charts 1 --keep-latest-excel 1
+```
+
+Useful display flags:
+- `--show` opens charts interactively (GUI backend required).
+- `--no-show` forces non-interactive execution (default), suitable for headless runs.
+
 ## Configuration
 
 All strategy parameters are in `config.json`:
