@@ -219,3 +219,4 @@ marimo/_lsp/
 __marimo__/
 # Mac DS_Store
 Data/options_filtered.parquet
+Data/options_filtered.parquet
