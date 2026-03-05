@@ -12,5 +12,20 @@
     "end_date": "2025-12-31",
     "initial_capital": 1000000,
     "universe_exclude_top_n_largecap": 500,
-    "universe_min_dollar_volume": 1000000
+    "universe_min_dollar_volume": 1000000,
+
+    "blend_weight_systematic": 0.7,
+    "blend_weight_event": 0.3,
+    "pre_earnings_window": 5,
+
+    "skew_lookback_days": 5,
+    "zscore_window": 252,
+    "preearnings_window_days": 7,
+    "winsor_sigma": 3.0,
+    "gate_drift_threshold": -1.0,
+    "gate_vol_threshold": 0.5,
+    "sizer_delta_a": 0.3,
+    "sizer_cpr_b": 0.2,
+    "sizer_vol_k": 0.5,
+    "base_position_size": 1.0
 }

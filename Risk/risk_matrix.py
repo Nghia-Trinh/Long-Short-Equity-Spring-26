@@ -81,21 +81,32 @@ class RiskMatrixBuilder:
 
         return self
 
-    def get(self, date) -> pd.DataFrame:
-        """Return the N x N covariance matrix for `date`.
+    def get(self, date):
+        """Return the N x N covariance matrix for ``date``.
 
-        Exact-match on timestamps is used. `date` may be any value
-        accepted by `pd.Timestamp`.
+        If an exact match is not found, the most recent earlier date is
+        used (graceful fallback for weekends, holidays, or non-trading
+        rebalance dates).
+
+        Returns
+        -------
+        np.ndarray
+            Covariance matrix of shape (N, N).
         """
         if self._cov_dict is None:
             raise RuntimeError("RiskMatrixBuilder not fitted. Call `.fit()` first.")
 
         ts = pd.Timestamp(date)
-        if ts not in self._cov_dict:
-            raise KeyError(f"No covariance matrix available for date {ts}")
+        if ts in self._cov_dict:
+            return self._cov_dict[ts].copy()
 
-        # return a copy to avoid external mutation
-        return self._cov_dict[ts].copy()
+        # Fallback: nearest earlier date
+        available = sorted(self._cov_dict.keys())
+        earlier = [d for d in available if d <= ts]
+        if not earlier:
+            raise KeyError(f"No covariance matrix available on or before {ts}")
+
+        return self._cov_dict[earlier[-1]].copy()
 
     @property
     def tickers(self) -> List[str]:
