@@ -53,11 +53,11 @@ class SignalBlender:
     rebalance_dates : pd.DatetimeIndex
         Full set of rebalance dates (used to pre-build the alpha matrix).
     blend_weight_systematic : float
-        Weight on the systematic (SUE) signal.  Default 0.7.
+        Weight on the systematic (SUE) signal.  Default 0.6.
     blend_weight_event : float
-        Weight on the event (PreEarnings) overlay.  Default 0.3.
+        Weight on the event (PreEarnings) overlay.  Default 0.25.
     blend_weight_thesis : float
-        Weight on discretionary thesis NLP overlay. Default 0.2.
+        Weight on discretionary thesis NLP overlay. Default 0.15.
     pre_earnings_window : int
         Number of calendar days before an earnings event during which the
         pre-earnings overlay is active.  Default 5.
@@ -69,9 +69,9 @@ class SignalBlender:
         self,
         tickers: list[str],
         rebalance_dates: pd.DatetimeIndex,
-        blend_weight_systematic: float = 0.7,
-        blend_weight_event: float = 0.3,
-        blend_weight_thesis: float = 0.2,
+        blend_weight_systematic: float = 0.6,
+        blend_weight_event: float = 0.25,
+        blend_weight_thesis: float = 0.15,
         pre_earnings_window: int = 5,
         config: dict | None = None,
     ):
@@ -165,7 +165,7 @@ class SignalBlender:
             else:
                 alpha_row = self._alpha_matrix.loc[earlier[-1]].values.astype(float)
 
-        weighted_alpha = self.w_sys * alpha_row
+        weighted_sum = self.w_sys * alpha_row
         total_weight = self.w_sys
 
         # --- Event overlay (PreEarnings) ---
@@ -220,16 +220,16 @@ class SignalBlender:
                     event_overlay = overlay_vec
 
         if event_overlay is not None:
-            weighted_alpha += self.w_evt * event_overlay
+            weighted_sum += self.w_evt * event_overlay
             total_weight += self.w_evt
 
         # --- Thesis overlay (NLP) ---
         if self._thesis_overlay is not None:
             thesis_vector = self._thesis_overlay.get_overlay(date)
             if thesis_vector is not None:
-                weighted_alpha += self.w_thesis * thesis_vector
+                weighted_sum += self.w_thesis * thesis_vector
                 total_weight += self.w_thesis
 
         if total_weight > 0:
-            return weighted_alpha / total_weight
+            return weighted_sum / total_weight
         return alpha_row

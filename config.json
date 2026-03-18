@@ -14,9 +14,9 @@
     "universe_exclude_top_n_largecap": 500,
     "universe_min_dollar_volume": 1000000,
 
-    "blend_weight_systematic": 0.7,
-    "blend_weight_event": 0.3,
-    "blend_weight_thesis": 0.2,
+    "blend_weight_systematic": 0.6,
+    "blend_weight_event": 0.25,
+    "blend_weight_thesis": 0.15,
     "pre_earnings_window": 5,
     "investment_theses_file": null,
     "thesis_decay_half_life": 45,

@@ -165,9 +165,9 @@ All strategy parameters are in `config.json`:
 | `max_leverage` | 2.0 | Max gross exposure (100L / 100S) |
 | `max_position_pct` | 0.05 | Max single-name weight |
 | `sue_lookback_quarters` | 8 | Rolling window for SUE sigma estimation |
-| `blend_weight_systematic` | 0.7 | Weight on SUE signal in the blender |
-| `blend_weight_event` | 0.3 | Weight on pre-earnings overlay |
-| `blend_weight_thesis` | 0.2 | Weight on discretionary thesis NLP overlay |
+| `blend_weight_systematic` | 0.6 | Weight on SUE signal in the blender |
+| `blend_weight_event` | 0.25 | Weight on pre-earnings overlay |
+| `blend_weight_thesis` | 0.15 | Weight on discretionary thesis NLP overlay |
 | `pre_earnings_window` | 5 | Days before earnings to enable event overlay |
 | `investment_theses_file` | null | Optional JSON/CSV path for theses |
 | `thesis_decay_half_life` | 45 | Half-life (days) for thesis conviction decay |

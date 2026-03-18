@@ -199,7 +199,7 @@ class ThesisNLPOverlay:
     # Scoring
     # ------------------------------------------------------------------
     def _tokenise(self, text: str) -> list[str]:
-        return re.findall(r"[a-zA-Z][a-zA-Z\-]+", text.lower())
+        return re.findall(r"[a-zA-Z]+(?:-[a-zA-Z]+)*", text.lower())
 
     def _base_sentiment(self, text: str) -> float:
         tokens = self._tokenise(text)
@@ -256,7 +256,7 @@ class ThesisNLPOverlay:
             rec_scores = [self._score_record(rec, as_of) for rec in records]
             rec_scores = [s for s in rec_scores if s != 0.0]
             if rec_scores:
-                scores[idx] = float(np.tanh(np.mean(rec_scores)))
+                scores[idx] = float(np.clip(np.mean(rec_scores), -5.0, 5.0))
                 has_signal = True
 
         if not has_signal:
