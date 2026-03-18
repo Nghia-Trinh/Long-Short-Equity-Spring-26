@@ -165,8 +165,12 @@ class SignalBlender:
             else:
                 alpha_row = self._alpha_matrix.loc[earlier[-1]].values.astype(float)
 
-        weighted_sum = self.w_sys * alpha_row
-        total_weight = self.w_sys
+        alpha_row = np.asarray(alpha_row, dtype=float)
+        weighted_sum = np.zeros_like(alpha_row)
+        total_weight = 0.0
+        if self.w_sys > 0:
+            weighted_sum += self.w_sys * alpha_row
+            total_weight += self.w_sys
 
         # --- Event overlay (PreEarnings) ---
         # After the first failed attempt, stop retrying to avoid

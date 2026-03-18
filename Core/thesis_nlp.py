@@ -102,10 +102,12 @@ class ThesisNLPOverlay:
         records: List[ThesisRecord],
         decay_half_life: int = 45,
         default_confidence: float = 0.6,
+        score_clip: float = 5.0,
     ):
         self.tickers = [str(t).upper() for t in tickers]
         self.decay_half_life = max(int(decay_half_life), 1)
         self.default_confidence = max(float(default_confidence), 0.05)
+        self.score_clip = max(float(score_clip), 0.5)
 
         filtered_records = [r for r in records if r.ticker in self.tickers]
         self._records_by_ticker: dict[str, list[ThesisRecord]] = {}
@@ -123,9 +125,12 @@ class ThesisNLPOverlay:
 
         records: list[ThesisRecord] = []
 
+        default_conf = float(config.get("thesis_default_confidence", 0.6))
+        score_clip = float(config.get("thesis_score_clip", 5.0))
+
         inline = config.get("investment_theses")
         if isinstance(inline, list):
-            records.extend(cls._normalise_records(inline))
+            records.extend(cls._normalise_records(inline, default_confidence=default_conf))
 
         path_str = config.get("investment_theses_file")
         if isinstance(path_str, str) and path_str.strip():
@@ -133,7 +138,7 @@ class ThesisNLPOverlay:
             if not path.is_absolute():
                 path = _project_root() / path
             if path.exists():
-                records.extend(cls._load_from_file(path))
+                records.extend(cls._load_from_file(path, default_confidence=default_conf))
 
         if not records:
             return None
@@ -142,11 +147,12 @@ class ThesisNLPOverlay:
             tickers=tickers,
             records=records,
             decay_half_life=int(config.get("thesis_decay_half_life", 45)),
-            default_confidence=float(config.get("thesis_default_confidence", 0.6)),
+            default_confidence=default_conf,
+            score_clip=score_clip,
         )
 
     @classmethod
-    def _load_from_file(cls, path: Path) -> list[ThesisRecord]:
+    def _load_from_file(cls, path: Path, default_confidence: float) -> list[ThesisRecord]:
         suffix = path.suffix.lower()
         if suffix in {".json", ".txt"}:
             with path.open("r", encoding="utf-8") as f:
@@ -155,14 +161,14 @@ class ThesisNLPOverlay:
                 payload = payload.get("theses", [])
             if not isinstance(payload, list):
                 return []
-            return cls._normalise_records(payload)
+            return cls._normalise_records(payload, default_confidence=default_confidence)
         if suffix == ".csv":
             df = pd.read_csv(path)
-            return cls._normalise_records(df.to_dict(orient="records"))
+            return cls._normalise_records(df.to_dict(orient="records"), default_confidence=default_confidence)
         return []
 
     @staticmethod
-    def _normalise_records(raw: Iterable[dict]) -> list[ThesisRecord]:
+    def _normalise_records(raw: Iterable[dict], default_confidence: float) -> list[ThesisRecord]:
         records: list[ThesisRecord] = []
         for item in raw:
             if not isinstance(item, dict):
@@ -175,7 +181,7 @@ class ThesisNLPOverlay:
             thesis_date = pd.to_datetime(date_val, errors="coerce") if date_val is not None else pd.NaT
             confidence = float(item.get("confidence", item.get("score", np.nan)))
             if np.isnan(confidence):
-                confidence = 0.6
+                confidence = default_confidence
             horizon = item.get("horizon_days") or item.get("horizon")
             horizon_int = int(horizon) if horizon is not None and pd.notna(horizon) else None
             direction = item.get("direction")
@@ -233,7 +239,7 @@ class ThesisNLPOverlay:
         if base == 0.0 and record.direction is None:
             return 0.0
         if record.direction is not None:
-            base = abs(base) if base != 0 else 1.0
+            base = abs(base) if base != 0 else self.default_confidence
             base = base if record.direction == "long" else -base
         boost = self._conviction_boost(record.text)
         decay = self._decay(as_of, record.thesis_date, record.horizon_days)
@@ -256,7 +262,7 @@ class ThesisNLPOverlay:
             rec_scores = [self._score_record(rec, as_of) for rec in records]
             rec_scores = [s for s in rec_scores if s != 0.0]
             if rec_scores:
-                scores[idx] = float(np.clip(np.mean(rec_scores), -5.0, 5.0))
+                scores[idx] = float(np.clip(np.mean(rec_scores), -self.score_clip, self.score_clip))
                 has_signal = True
 
         if not has_signal:

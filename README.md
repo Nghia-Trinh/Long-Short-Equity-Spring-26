@@ -173,6 +173,7 @@ All strategy parameters are in `config.json`:
 | `thesis_decay_half_life` | 45 | Half-life (days) for thesis conviction decay |
 | `thesis_default_confidence` | 0.6 | Default confidence when missing from input |
 | `thesis_default_horizon_days` | 90 | Optional shelf-life for stale theses |
+| `thesis_score_clip` | 5.0 | Symmetric cap applied to averaged thesis scores before z-scoring |
 | `start_date` | 2018-01-01 | Backtest start |
 | `end_date` | 2025-12-31 | Backtest end |
 | `initial_capital` | 1,000,000 | Starting capital ($) |
