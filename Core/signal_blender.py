@@ -1,5 +1,6 @@
 """
 signal_blender.py — Blends Systematic Alpha with Event-Driven PreEarnings
+and discretionary thesis NLP overlay.
 
 Produces a single (N,) alpha vector per rebalance date that the portfolio
 optimizer consumes.
@@ -8,9 +9,11 @@ Logic per date:
     1. Start from the systematic SUE alpha row (cross-sectionally z-scored).
     2. For tickers within `pre_earnings_window` days of an earnings event,
        overlay the PreEarnings direction × size as an additive event signal.
-    3. Blend: alpha = w_sys * systematic + w_evt * event_overlay
+    3. Overlay discretionary thesis NLP scores where provided.
+    4. Blend weights: w_sys, w_evt, w_thesis (normalised to sum to 1 for the
+       active components).
 
-When no events are active on a given date, the blended alpha is purely
+When no overlays are active on a given date, the blended alpha collapses to
 the systematic SUE signal.
 """
 
@@ -24,6 +27,7 @@ import numpy as np
 import pandas as pd
 
 from Alpha.alpha_matrix import build_alpha_matrix
+from Core.thesis_nlp import ThesisNLPOverlay
 from utils.data_loader import load_earnings
 
 
@@ -40,7 +44,7 @@ def _load_config() -> dict:
 
 
 class SignalBlender:
-    """Combines systematic SUE alpha with event-driven pre-earnings signals.
+    """Combines systematic SUE alpha with event-driven and thesis overlays.
 
     Parameters
     ----------
@@ -52,6 +56,8 @@ class SignalBlender:
         Weight on the systematic (SUE) signal.  Default 0.7.
     blend_weight_event : float
         Weight on the event (PreEarnings) overlay.  Default 0.3.
+    blend_weight_thesis : float
+        Weight on discretionary thesis NLP overlay. Default 0.2.
     pre_earnings_window : int
         Number of calendar days before an earnings event during which the
         pre-earnings overlay is active.  Default 5.
@@ -65,6 +71,7 @@ class SignalBlender:
         rebalance_dates: pd.DatetimeIndex,
         blend_weight_systematic: float = 0.7,
         blend_weight_event: float = 0.3,
+        blend_weight_thesis: float = 0.2,
         pre_earnings_window: int = 5,
         config: dict | None = None,
     ):
@@ -72,6 +79,7 @@ class SignalBlender:
         self.n = len(self.tickers)
         self.w_sys = float(blend_weight_systematic)
         self.w_evt = float(blend_weight_event)
+        self.w_thesis = float(blend_weight_thesis)
         self.window = int(pre_earnings_window)
         self.config = config or _load_config()
 
@@ -99,6 +107,12 @@ class SignalBlender:
         self._pre_earnings: Optional[object] = None
         self._pre_earnings_available: Optional[bool] = None
         self._pre_earnings_tried: bool = False
+
+        # Optional discretionary overlay from investment theses.
+        self._thesis_overlay = ThesisNLPOverlay.from_config(
+            config=self.config,
+            tickers=self.tickers,
+        )
 
     def _get_pre_earnings_signal(self):
         """Lazy-load PreEarningsSignal; returns None if import or init fails."""
@@ -151,60 +165,71 @@ class SignalBlender:
             else:
                 alpha_row = self._alpha_matrix.loc[earlier[-1]].values.astype(float)
 
+        weighted_alpha = self.w_sys * alpha_row
+        total_weight = self.w_sys
+
         # --- Event overlay (PreEarnings) ---
         # After the first failed attempt, stop retrying to avoid
         # per-ticker overhead when options data is missing.
-        if self._pre_earnings_tried and not self._pre_earnings_available:
-            return alpha_row
+        event_overlay = None
+        if not (self._pre_earnings_tried and not self._pre_earnings_available):
+            pre_earnings = self._get_pre_earnings_signal()
+            if pre_earnings is not None:
+                overlay_vec = np.zeros(self.n)
+                has_overlay = False
+                failed_count = 0
 
-        pre_earnings = self._get_pre_earnings_signal()
-        if pre_earnings is None:
-            return alpha_row
+                for i, tk in enumerate(self.tickers):
+                    # Skip tickers with no earnings in the calendar
+                    if tk not in self._earnings_dict:
+                        continue
+                    upcoming = self._next_earnings(tk, date)
+                    if upcoming is None:
+                        continue
+                    days_to_event = (upcoming - date).days
+                    if 0 < days_to_event <= self.window:
+                        try:
+                            output = pre_earnings.generate(
+                                ticker=tk,
+                                event_date=upcoming,
+                                options_df=None,
+                                prices_df=None,
+                                earnings_df=None,
+                            )
+                            if output.direction is not None and output.position_size > 0:
+                                direction_sign = 1.0 if output.direction == "long" else -1.0
+                                overlay_vec[i] = direction_sign * output.position_size
+                                has_overlay = True
+                            else:
+                                failed_count += 1
+                        except Exception:
+                            failed_count += 1
 
-        event_overlay = np.zeros(self.n)
-        has_overlay = False
-        failed_count = 0
+                        # If the first 3 attempts all fail, options data is missing;
+                        # bail out for all future dates.
+                        if failed_count >= 3 and not has_overlay:
+                            self._pre_earnings_tried = True
+                            self._pre_earnings_available = False
+                            break
 
-        for i, tk in enumerate(self.tickers):
-            # Skip tickers with no earnings in the calendar
-            if tk not in self._earnings_dict:
-                continue
-            upcoming = self._next_earnings(tk, date)
-            if upcoming is None:
-                continue
-            days_to_event = (upcoming - date).days
-            if 0 < days_to_event <= self.window:
-                try:
-                    output = pre_earnings.generate(
-                        ticker=tk,
-                        event_date=upcoming,
-                        options_df=None,
-                        prices_df=None,
-                        earnings_df=None,
-                    )
-                    if output.direction is not None and output.position_size > 0:
-                        direction_sign = 1.0 if output.direction == "long" else -1.0
-                        event_overlay[i] = direction_sign * output.position_size
-                        has_overlay = True
-                    else:
-                        failed_count += 1
-                except Exception:
-                    failed_count += 1
+                if has_overlay:
+                    ev_nonzero = overlay_vec[overlay_vec != 0]
+                    ev_std = float(np.std(ev_nonzero)) if len(ev_nonzero) > 1 else 1.0
+                    if ev_std > 0:
+                        overlay_vec = overlay_vec / ev_std
+                    event_overlay = overlay_vec
 
-                # If the first 3 attempts all fail, options data is missing;
-                # bail out for all future dates.
-                if failed_count >= 3 and not has_overlay:
-                    self._pre_earnings_tried = True
-                    self._pre_earnings_available = False
-                    return alpha_row
+        if event_overlay is not None:
+            weighted_alpha += self.w_evt * event_overlay
+            total_weight += self.w_evt
 
-        # --- Blend ---
-        if has_overlay:
-            # Normalise event overlay to same scale as systematic
-            ev_nonzero = event_overlay[event_overlay != 0]
-            ev_std = float(np.std(ev_nonzero)) if len(ev_nonzero) > 1 else 1.0
-            if ev_std > 0:
-                event_overlay = event_overlay / ev_std
-            return self.w_sys * alpha_row + self.w_evt * event_overlay
-        else:
-            return alpha_row
+        # --- Thesis overlay (NLP) ---
+        if self._thesis_overlay is not None:
+            thesis_vector = self._thesis_overlay.get_overlay(date)
+            if thesis_vector is not None:
+                weighted_alpha += self.w_thesis * thesis_vector
+                total_weight += self.w_thesis
+
+        if total_weight > 0:
+            return weighted_alpha / total_weight
+        return alpha_row

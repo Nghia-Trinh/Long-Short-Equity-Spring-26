@@ -16,7 +16,12 @@
 
     "blend_weight_systematic": 0.7,
     "blend_weight_event": 0.3,
+    "blend_weight_thesis": 0.2,
     "pre_earnings_window": 5,
+    "investment_theses_file": null,
+    "thesis_decay_half_life": 45,
+    "thesis_default_confidence": 0.6,
+    "thesis_default_horizon_days": 90,
 
     "skew_lookback_days": 5,
     "zscore_window": 252,

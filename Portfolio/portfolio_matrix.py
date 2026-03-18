@@ -125,9 +125,10 @@ def build_portfolio_matrix(config: dict | None = None, live: bool = False) -> pd
     blender = SignalBlender(
         tickers=tickers,
         rebalance_dates=pd.DatetimeIndex(rebalance_dates),
-        blend_weight_systematic=0.7,
-        blend_weight_event=0.3,
-        pre_earnings_window=int(config.get("holding_period_days", 10)) // 2,
+        blend_weight_systematic=float(config.get("blend_weight_systematic", 0.7)),
+        blend_weight_event=float(config.get("blend_weight_event", 0.3)),
+        blend_weight_thesis=float(config.get("blend_weight_thesis", 0.2)),
+        pre_earnings_window=int(config.get("pre_earnings_window", int(config.get("holding_period_days", 10)) // 2)),
         config=config,
     )
     print(f"    → alpha matrix built  ({time.time() - t0:.1f}s)")
