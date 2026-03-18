@@ -18,7 +18,7 @@
     "blend_weight_event": 0.25,
     "blend_weight_thesis": 0.15,
     "pre_earnings_window": 5,
-    "investment_theses_file": null,
+    "investment_theses_file_path": null,
     "thesis_decay_half_life": 45,
     "thesis_default_confidence": 0.6,
     "thesis_default_horizon_days": 90,

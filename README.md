@@ -87,12 +87,12 @@ Two planned signals to trade **before** earnings:
 
 See [PreEarnings/README.md](PreEarnings/README.md) for full specs.
 
-## Investment Theses NLP Overlay (Core/thesis_nlp.py)
+## Investment Theses NLP Overlay
 
-You can optionally layer discretionary investment theses on top of the systematic SUE signal. A lightweight NLP engine scores each thesis for direction, conviction, and recency, then blends it into the alpha vector.
+You can optionally layer discretionary investment theses on top of the systematic SUE signal. A lightweight NLP engine (implemented in `Core/thesis_nlp.py`) scores each thesis for direction, conviction, and recency, then blends it into the alpha vector.
 
-- Supported inputs: JSON/CSV via `investment_theses_file` **or** inline `investment_theses` list in `config.json`.
-- Each thesis row needs at minimum `ticker` and `thesis` text. Optional fields: `direction` (`long`/`short`), `confidence` (0-5), `date`/`thesis_date`, `horizon_days`.
+- Supported inputs: JSON/CSV via `investment_theses_file_path` **or** inline `investment_theses` list in `config.json`.
+- Each thesis row needs at minimum `ticker` and `thesis` text. Optional fields: `direction` (`long`/`short`), `confidence` (0-5, `score` accepted as alias), `thesis_date`/`date`/`as_of`, `horizon_days`.
 - Scores decay over time using an exponential half-life (`thesis_decay_half_life`) and are z-scored cross-sectionally before blending.
 
 Example JSON file:
@@ -169,11 +169,11 @@ All strategy parameters are in `config.json`:
 | `blend_weight_event` | 0.25 | Weight on pre-earnings overlay |
 | `blend_weight_thesis` | 0.15 | Weight on discretionary thesis NLP overlay |
 | `pre_earnings_window` | 5 | Days before earnings to enable event overlay |
-| `investment_theses_file` | null | Optional JSON/CSV path for theses |
+| `investment_theses_file_path` | null | Optional JSON/CSV path for theses |
 | `thesis_decay_half_life` | 45 | Half-life (days) for thesis conviction decay |
 | `thesis_default_confidence` | 0.6 | Default confidence when missing from input |
 | `thesis_default_horizon_days` | 90 | Optional shelf-life for stale theses |
-| `thesis_score_clip` | 5.0 | Symmetric cap applied to averaged thesis scores before z-scoring |
+| `thesis_score_clip` | 5.0 | Thesis scores are clipped to [-5.0, 5.0] before z-scoring |
 | `start_date` | 2018-01-01 | Backtest start |
 | `end_date` | 2025-12-31 | Backtest end |
 | `initial_capital` | 1,000,000 | Starting capital ($) |

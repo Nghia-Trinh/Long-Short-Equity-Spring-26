@@ -9,6 +9,13 @@ still capturing directional and conviction cues from text.
 Usage:
     overlay = ThesisNLPOverlay.from_config(config, tickers)
     vector = overlay.get_overlay(date)  # np.ndarray aligned to tickers order
+
+Notes:
+- Date precedence when parsing: ``thesis_date`` → ``date`` → ``as_of``.
+- Confidence should be provided via ``confidence`` (0-5); ``score`` is
+  accepted as a legacy alias.
+- Thesis scores are clipped symmetrically to ``[-score_clip, score_clip]``
+  before cross-sectional z-scoring.
 """
 
 from __future__ import annotations
@@ -24,7 +31,17 @@ import pandas as pd
 
 
 def _project_root() -> Path:
-    return Path(__file__).resolve().parents[1]
+    here = Path(__file__).resolve()
+    for parent in [here.parent, *here.parents]:
+        if (parent / "config.json").exists():
+            return parent
+    # Fallback to previous behaviour if marker search fails.
+    return here.parents[1]
+
+
+_MIN_DECAY_HALF_LIFE = 1
+_MIN_CONFIDENCE = 0.05
+_MIN_SCORE_CLIP = 0.5
 
 
 _POSITIVE_CUES = {
@@ -105,9 +122,9 @@ class ThesisNLPOverlay:
         score_clip: float = 5.0,
     ):
         self.tickers = [str(t).upper() for t in tickers]
-        self.decay_half_life = max(int(decay_half_life), 1)
-        self.default_confidence = max(float(default_confidence), 0.05)
-        self.score_clip = max(float(score_clip), 0.5)
+        self.decay_half_life = max(int(decay_half_life), _MIN_DECAY_HALF_LIFE)
+        self.default_confidence = max(float(default_confidence), _MIN_CONFIDENCE)
+        self.score_clip = max(float(score_clip), _MIN_SCORE_CLIP)
 
         filtered_records = [r for r in records if r.ticker in self.tickers]
         self._records_by_ticker: dict[str, list[ThesisRecord]] = {}
@@ -132,7 +149,9 @@ class ThesisNLPOverlay:
         if isinstance(inline, list):
             records.extend(cls._normalise_records(inline, default_confidence=default_conf))
 
-        path_str = config.get("investment_theses_file")
+        path_str = config.get("investment_theses_file_path")
+        if not path_str:
+            path_str = config.get("investment_theses_file")
         if isinstance(path_str, str) and path_str.strip():
             path = Path(path_str)
             if not path.is_absolute():
@@ -177,9 +196,19 @@ class ThesisNLPOverlay:
             text = str(item.get("thesis", item.get("text", ""))).strip()
             if not ticker or not text:
                 continue
-            date_val = item.get("date") or item.get("as_of") or item.get("thesis_date")
+            date_val = None
+            for key in ("thesis_date", "date", "as_of"):
+                if key in item:
+                    date_val = item.get(key)
+                    break
             thesis_date = pd.to_datetime(date_val, errors="coerce") if date_val is not None else pd.NaT
-            confidence = float(item.get("confidence", item.get("score", np.nan)))
+            raw_conf = item.get("confidence")
+            if raw_conf is None:
+                raw_conf = item.get("score")
+            try:
+                confidence = float(raw_conf) if raw_conf is not None else float("nan")
+            except (TypeError, ValueError):
+                confidence = float("nan")
             if np.isnan(confidence):
                 confidence = default_confidence
             horizon = item.get("horizon_days") or item.get("horizon")
