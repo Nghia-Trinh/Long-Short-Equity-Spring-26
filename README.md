@@ -87,6 +87,38 @@ Two planned signals to trade **before** earnings:
 
 See [PreEarnings/README.md](PreEarnings/README.md) for full specs.
 
+## Investment Theses NLP Overlay
+
+You can optionally layer discretionary investment theses on top of the systematic SUE signal. A lightweight NLP engine (implemented in `Core/thesis_nlp.py`) scores each thesis for direction, conviction, and recency, then blends it into the alpha vector.
+
+- Supported inputs: JSON/CSV via `investment_theses_file_path` **or** inline `investment_theses` list in `config.json`.
+- Each thesis row needs at minimum `ticker` and `thesis` text. Optional fields: `direction` (`long`/`short`), `confidence` (subjective conviction 0-5; `score` accepted as alias), `thesis_date`/`date`/`as_of`, `horizon_days`.
+- Scores decay over time using an exponential half-life (`thesis_decay_half_life`) and are z-scored cross-sectionally before blending.
+
+Example JSON file:
+```json
+{
+  "theses": [
+    {
+      "ticker": "AAPL",
+      "thesis": "High conviction margin expansion from services mix; resilient demand tailwind.",
+      "direction": "long",
+      "confidence": 4.5,
+      "date": "2025-10-01",
+      "horizon_days": 120
+    },
+    {
+      "ticker": "XYZ",
+      "thesis": "Overvalued after parabolic move; competitive headwinds and slowing growth.",
+      "direction": "short",
+      "confidence": 3.5
+    }
+  ]
+}
+```
+
+Blending weights are controlled via `blend_weight_systematic`, `blend_weight_event`, and `blend_weight_thesis` in `config.json`. When no thesis data is provided, the overlay is ignored and the behaviour matches the prior SUE-only pipeline.
+
 ## Running the Strategy
 
 ### Option A: Pure Python (offline, no QuantConnect)
@@ -133,6 +165,15 @@ All strategy parameters are in `config.json`:
 | `max_leverage` | 2.0 | Max gross exposure (100L / 100S) |
 | `max_position_pct` | 0.05 | Max single-name weight |
 | `sue_lookback_quarters` | 8 | Rolling window for SUE sigma estimation |
+| `blend_weight_systematic` | 0.6 | Weight on SUE signal in the blender |
+| `blend_weight_event` | 0.25 | Weight on pre-earnings overlay |
+| `blend_weight_thesis` | 0.15 | Weight on discretionary thesis NLP overlay |
+| `pre_earnings_window` | 5 | Days before earnings to enable event overlay |
+| `investment_theses_file_path` | null | Optional JSON/CSV path for theses |
+| `thesis_decay_half_life` | 45 | Half-life (days) for thesis conviction decay |
+| `thesis_default_confidence` | 0.6 | Default confidence when missing from input |
+| `thesis_default_horizon_days` | 90 | Optional shelf-life for stale theses |
+| `thesis_score_clip` | 5.0 | Thesis scores are clipped to [-5.0, 5.0] before z-scoring |
 | `start_date` | 2018-01-01 | Backtest start |
 | `end_date` | 2025-12-31 | Backtest end |
 | `initial_capital` | 1,000,000 | Starting capital ($) |
