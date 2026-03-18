@@ -167,7 +167,7 @@ class SignalBlender:
 
         alpha_row = np.asarray(alpha_row, dtype=float)
         weighted_sum = np.zeros_like(alpha_row)
-        total_weight = 0.0  # scalar sum of component weights applied; re-scaled across active components
+        total_weight = 0.0  # scalar sum of component weights applied; rescaled across active components
         if self.w_sys > 0:
             weighted_sum += self.w_sys * alpha_row
             total_weight += self.w_sys
@@ -235,5 +235,5 @@ class SignalBlender:
                 total_weight += self.w_thesis
 
         if total_weight <= 1e-10:
-            return alpha_row
+            return np.zeros_like(alpha_row)
         return weighted_sum / total_weight

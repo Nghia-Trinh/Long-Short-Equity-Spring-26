@@ -16,6 +16,8 @@ Notes:
   accepted as a legacy alias.
 - If a thesis specifies a direction with no sentiment cues, the base
   magnitude falls back to ``thesis_default_confidence``.
+- Multiple theses for the same ticker are averaged (conflicting views
+  will offset each other).
 - Thesis scores are clipped symmetrically to ``[-score_clip, score_clip]``
   before cross-sectional z-scoring.
 """
@@ -153,9 +155,6 @@ class ThesisNLPOverlay:
             records.extend(cls._normalise_records(inline, default_confidence=default_conf))
 
         path_str = config.get("investment_theses_file_path")
-        if not path_str:
-            # Legacy key support for older configs
-            path_str = config.get("investment_theses_file")
         if isinstance(path_str, str) and path_str.strip():
             path = Path(path_str)
             if not path.is_absolute():
@@ -272,7 +271,7 @@ class ThesisNLPOverlay:
         if base == 0.0 and record.direction is None:
             return 0.0
         if record.direction is not None:
-            base = abs(base) if base != 0 else max(record.confidence, self.default_confidence)
+            base = abs(base) if base != 0 else max(record.confidence, self.default_confidence) / _MAX_CONFIDENCE
             base = base if record.direction == "long" else -base
         boost = self._conviction_boost(record.text)
         decay = self._decay(as_of, record.thesis_date, record.horizon_days)
