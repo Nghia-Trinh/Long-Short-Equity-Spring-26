@@ -271,6 +271,7 @@ class ThesisNLPOverlay:
         if base == 0.0 and record.direction is None:
             return 0.0
         if record.direction is not None:
+            # If sentiment is neutral but direction is provided, fall back to a confidence-scaled magnitude.
             base = abs(base) if base != 0 else max(record.confidence, self.default_confidence) / _MAX_CONFIDENCE
             base = base if record.direction == "long" else -base
         boost = self._conviction_boost(record.text)

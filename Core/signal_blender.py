@@ -235,5 +235,5 @@ class SignalBlender:
                 total_weight += self.w_thesis
 
         if total_weight <= 1e-10:
-            return np.zeros_like(alpha_row)
+            return alpha_row
         return weighted_sum / total_weight

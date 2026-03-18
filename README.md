@@ -103,7 +103,7 @@ Example JSON file:
       "ticker": "AAPL",
       "thesis": "High conviction margin expansion from services mix; resilient demand tailwind.",
       "direction": "long",
-      "confidence": 0.9,
+      "confidence": 4.5,
       "date": "2025-10-01",
       "horizon_days": 120
     },
@@ -111,7 +111,7 @@ Example JSON file:
       "ticker": "XYZ",
       "thesis": "Overvalued after parabolic move; competitive headwinds and slowing growth.",
       "direction": "short",
-      "confidence": 0.7
+      "confidence": 3.5
     }
   ]
 }
