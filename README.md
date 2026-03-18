@@ -91,7 +91,7 @@ See [PreEarnings/README.md](PreEarnings/README.md) for full specs.
 
 You can optionally layer discretionary investment theses on top of the systematic SUE signal. A lightweight NLP engine (implemented in `Core/thesis_nlp.py`) scores each thesis for direction, conviction, and recency, then blends it into the alpha vector.
 
-- Supported inputs: JSON/CSV via `investment_theses_file_path` **or** inline `investment_theses` list in `config.json`.
+- Supported inputs: JSON/CSV via `investment_theses_file_path` (legacy key `investment_theses_file` also accepted) **or** inline `investment_theses` list in `config.json`.
 - Each thesis row needs at minimum `ticker` and `thesis` text. Optional fields: `direction` (`long`/`short`), `confidence` (subjective conviction 0-5; `score` accepted as alias), `thesis_date`/`date`/`as_of`, `horizon_days`.
 - Scores decay over time using an exponential half-life (`thesis_decay_half_life`) and are z-scored cross-sectionally before blending.
 

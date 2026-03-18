@@ -154,6 +154,7 @@ class ThesisNLPOverlay:
 
         path_str = config.get("investment_theses_file_path")
         if not path_str:
+            # Legacy key support for older configs
             path_str = config.get("investment_theses_file")
         if isinstance(path_str, str) and path_str.strip():
             path = Path(path_str)
@@ -271,7 +272,7 @@ class ThesisNLPOverlay:
         if base == 0.0 and record.direction is None:
             return 0.0
         if record.direction is not None:
-            base = abs(base) if base != 0 else self.default_confidence
+            base = abs(base) if base != 0 else max(record.confidence, self.default_confidence)
             base = base if record.direction == "long" else -base
         boost = self._conviction_boost(record.text)
         decay = self._decay(as_of, record.thesis_date, record.horizon_days)
