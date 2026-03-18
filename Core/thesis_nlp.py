@@ -14,6 +14,8 @@ Notes:
 - Date precedence when parsing: ``thesis_date`` → ``date`` → ``as_of``.
 - Confidence should be provided via ``confidence`` (0-5); ``score`` is
   accepted as a legacy alias.
+- If a thesis specifies a direction with no sentiment cues, the base
+  magnitude falls back to ``thesis_default_confidence``.
 - Thesis scores are clipped symmetrically to ``[-score_clip, score_clip]``
   before cross-sectional z-scoring.
 """
@@ -42,6 +44,7 @@ def _project_root() -> Path:
 _MIN_DECAY_HALF_LIFE = 1
 _MIN_CONFIDENCE = 0.05
 _MIN_SCORE_CLIP = 0.5
+_MAX_CONFIDENCE = 5.0
 
 
 _POSITIVE_CUES = {
@@ -223,7 +226,7 @@ class ThesisNLPOverlay:
                     ticker=ticker,
                     text=text,
                     thesis_date=thesis_date if pd.notna(thesis_date) else None,
-                    confidence=max(min(confidence, 5.0), 0.0),
+                    confidence=max(min(confidence, _MAX_CONFIDENCE), 0.0),
                     horizon_days=horizon_int,
                     direction=direction,
                 )

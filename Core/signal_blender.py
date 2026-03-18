@@ -10,8 +10,8 @@ Logic per date:
     2. For tickers within `pre_earnings_window` days of an earnings event,
        overlay the PreEarnings direction × size as an additive event signal.
     3. Overlay discretionary thesis NLP scores where provided.
-    4. Blend weights: w_sys, w_evt, w_thesis (normalised to sum to 1 for the
-       active components).
+    4. Blend weights: w_sys, w_evt, w_thesis (automatically re-scaled across
+       the active components; the configured weights do not need to sum to 1).
 
 When no overlays are active on a given date, the blended alpha collapses to
 the systematic SUE signal.
@@ -234,6 +234,8 @@ class SignalBlender:
                 weighted_sum += self.w_thesis * thesis_vector
                 total_weight += self.w_thesis
 
-        if total_weight > 1e-10:
-            return weighted_sum / total_weight
-        return alpha_row
+        if total_weight <= 0:
+            return alpha_row
+        if total_weight < 1e-10:
+            return weighted_sum
+        return weighted_sum / total_weight
