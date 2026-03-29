@@ -1,0 +1,22 @@
+{
+  "ticker": "AMD",
+  "benchmark": "^GSPC",
+  "observations": 130,
+  "total_return": 0.264097,
+  "annualized_return": 0.580617,
+  "annualized_volatility": 0.69367,
+  "sharpe_ratio": 0.997186,
+  "sortino_ratio": 1.604506,
+  "max_drawdown": -0.277608,
+  "benchmark_return": -0.048538,
+  "alpha": 0.673239,
+  "correlation": 0.516187,
+  "beta": 2.813237,
+  "momentum_1m": -0.008297,
+  "momentum_3m": -0.060686,
+  "momentum_6m": 0.252496,
+  "current_price": 201.990005,
+  "high_52w": 264.329987,
+  "low_52w": 159.460007,
+  "pct_from_high_52w": -0.235842
+}

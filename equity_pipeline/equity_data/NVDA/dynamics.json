@@ -1,0 +1,22 @@
+{
+  "ticker": "NVDA",
+  "benchmark": "^GSPC",
+  "observations": 130,
+  "total_return": -0.087631,
+  "annualized_return": -0.164025,
+  "annualized_volatility": 0.356856,
+  "sharpe_ratio": -0.32486,
+  "sortino_ratio": -0.514597,
+  "max_drawdown": -0.190881,
+  "benchmark_return": -0.048538,
+  "alpha": -0.071403,
+  "correlation": 0.671461,
+  "beta": 1.882607,
+  "momentum_1m": -0.093948,
+  "momentum_3m": -0.111818,
+  "momentum_6m": -0.057234,
+  "current_price": 167.520004,
+  "high_52w": 207.039993,
+  "low_52w": 167.520004,
+  "pct_from_high_52w": -0.190881
+}

@@ -1,0 +1,57 @@
+{
+  "technology": {
+    "etf": "XLK",
+    "total_return_pct": -8.0733,
+    "one_month_return_pct": -7.8647
+  },
+  "health_care": {
+    "etf": "XLV",
+    "total_return_pct": 4.8525,
+    "one_month_return_pct": -8.995
+  },
+  "financials": {
+    "etf": "XLF",
+    "total_return_pct": -11.463,
+    "one_month_return_pct": -8.9333
+  },
+  "consumer_discretionary": {
+    "etf": "XLY",
+    "total_return_pct": -11.9993,
+    "one_month_return_pct": -9.7138
+  },
+  "communication_services": {
+    "etf": "XLC",
+    "total_return_pct": -9.7318,
+    "one_month_return_pct": -8.2934
+  },
+  "industrials": {
+    "etf": "XLI",
+    "total_return_pct": 4.0523,
+    "one_month_return_pct": -9.9038
+  },
+  "energy": {
+    "etf": "XLE",
+    "total_return_pct": 42.717,
+    "one_month_return_pct": 13.6421
+  },
+  "utilities": {
+    "etf": "XLU",
+    "total_return_pct": 7.0188,
+    "one_month_return_pct": -3.3701
+  },
+  "materials": {
+    "etf": "XLB",
+    "total_return_pct": 8.2439,
+    "one_month_return_pct": -7.717
+  },
+  "real_estate": {
+    "etf": "XLRE",
+    "total_return_pct": -3.9837,
+    "one_month_return_pct": -8.297
+  },
+  "consumer_staples": {
+    "etf": "XLP",
+    "total_return_pct": 4.8999,
+    "one_month_return_pct": -7.9676
+  }
+}

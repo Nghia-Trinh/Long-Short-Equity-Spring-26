@@ -1,0 +1,46 @@
+{
+  "10-K": [
+    {
+      "form_type": "10-K",
+      "filed_date": "2026-02-25",
+      "accession_number": "0001045810-26-000021"
+    },
+    {
+      "form_type": "10-K",
+      "filed_date": "2025-02-26",
+      "accession_number": "0001045810-25-000023"
+    },
+    {
+      "form_type": "10-K",
+      "filed_date": "2024-02-21",
+      "accession_number": "0001045810-24-000029"
+    },
+    {
+      "form_type": "10-K",
+      "filed_date": "2023-02-24",
+      "accession_number": "0001045810-23-000017"
+    }
+  ],
+  "10-Q": [
+    {
+      "form_type": "10-Q",
+      "filed_date": "2025-11-19",
+      "accession_number": "0001045810-25-000230"
+    },
+    {
+      "form_type": "10-Q",
+      "filed_date": "2025-08-27",
+      "accession_number": "0001045810-25-000209"
+    },
+    {
+      "form_type": "10-Q",
+      "filed_date": "2025-05-28",
+      "accession_number": "0001045810-25-000116"
+    },
+    {
+      "form_type": "10-Q",
+      "filed_date": "2024-11-20",
+      "accession_number": "0001045810-24-000316"
+    }
+  ]
+}
