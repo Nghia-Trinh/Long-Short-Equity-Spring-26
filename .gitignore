@@ -6,6 +6,7 @@ __pycache__/
 # Outputs (generated files — not tracked)
 outputs/*.csv
 outputs/*.parquet
+/tmp/factset_pipeline_netlify/
 
 # LEAN CLI
 .lean/

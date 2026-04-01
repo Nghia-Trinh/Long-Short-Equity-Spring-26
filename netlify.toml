@@ -1,0 +1,14 @@
+[build]
+  functions = "netlify/functions"
+
+[[redirects]]
+  from = "/api/process"
+  to = "/.netlify/functions/factset-process"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/llm-factset/*"
+  to = "/.netlify/functions/factset-process"
+  status = 200
+  force = true
