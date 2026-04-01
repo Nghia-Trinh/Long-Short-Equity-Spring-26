@@ -21,7 +21,7 @@ Default benchmark is `^GSPC` (S&P 500). Defaults for paths and lookback live in 
   pip install -r requirements.txt
   ```
 
-  > **Note:** `requirements.txt` currently lists some packages twice with different pins. `pip` applies the last pin per package. For reproducible installs, consider deduplicating that file to one pin per dependency.
+  > **Note:** `requirements.txt` is deduplicated to one pin per package to keep installs reproducible.
 
 ### Python packages
 

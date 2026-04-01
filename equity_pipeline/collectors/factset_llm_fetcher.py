@@ -6,13 +6,22 @@ import logging
 from pathlib import Path
 from typing import Any, Iterable
 
-from config import (
-    FACTSET_API_KEY,
-    FACTSET_AUTH_METHOD,
-    FACTSET_DEFAULT_EXCHANGE,
-    FACTSET_OAUTH_CONFIG_PATH,
-    FACTSET_USERNAME,
-)
+try:
+    from config import (
+        FACTSET_API_KEY,
+        FACTSET_AUTH_METHOD,
+        FACTSET_DEFAULT_EXCHANGE,
+        FACTSET_OAUTH_CONFIG_PATH,
+        FACTSET_USERNAME,
+    )
+except ModuleNotFoundError:
+    from equity_pipeline.config import (
+        FACTSET_API_KEY,
+        FACTSET_AUTH_METHOD,
+        FACTSET_DEFAULT_EXCHANGE,
+        FACTSET_OAUTH_CONFIG_PATH,
+        FACTSET_USERNAME,
+    )
 
 
 LOGGER = logging.getLogger(__name__)
