@@ -96,6 +96,14 @@ python backtest.py
 ```
 Reads directly from `Data/` CSVs, outputs to `outputs/`.
 
+### Option A2: Pure Python + LLM Thesis Overlay
+```bash
+python backtest.py --enable-llm-overlay --llm-thesis-dir "Investment Theses" --llm-member-selections "Investment Theses/member_selections.sample.json"
+```
+This enables thesis-aware alpha/weight adjustments and writes:
+- `outputs/llm_overlay_diagnostics.csv`
+- `outputs/earnings_season_metrics.csv` (season-sliced backtest diagnostics)
+
 ### Option B: LEAN CLI (local QuantConnect backtest)
 ```bash
 pip install lean
@@ -110,6 +118,15 @@ Upload the entire project directory via quantconnect.com → Projects → Upload
 ```bash
 python Alpha/__init__.py --max-tickers 25 --keep-latest-charts 1 --keep-latest-excel 1
 ```
+
+### Option E: Google Colab + IBM Granite notebook
+Use `granite_timeseries_patchtsmixer.ipynb` for a Colab workflow that:
+- Loads IBM Granite from Hugging Face
+- Ingests investment theses and member picks
+- Applies thesis-aware risk-adjusted long/short reweighting
+- Backtests against Russell-style historical data and earnings-season slices
+
+LLM module docs: `LLM/README.md`
 
 All available tickers with strict cleanup:
 ```bash

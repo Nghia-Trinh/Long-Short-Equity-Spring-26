@@ -36,6 +36,7 @@ import numpy as np
 import pandas as pd
 
 from Core.signal_blender import SignalBlender
+from LLM.thesis_overlay import GraniteThesisOverlay
 from Portfolio.optimizer import optimize_portfolio
 from Risk.risk_matrix import RiskMatrixBuilder
 from utils.data_loader import get_returns_pivot, get_tickers
@@ -51,6 +52,12 @@ def _load_config() -> dict:
         return {}
     with config_path.open("r", encoding="utf-8") as f:
         return json.load(f)
+
+
+def _outputs_dir() -> Path:
+    out = _project_root() / "outputs"
+    out.mkdir(parents=True, exist_ok=True)
+    return out
 
 
 def build_portfolio_matrix(config: dict | None = None, live: bool = False) -> pd.DataFrame:
@@ -132,6 +139,27 @@ def build_portfolio_matrix(config: dict | None = None, live: bool = False) -> pd
     )
     print(f"    → alpha matrix built  ({time.time() - t0:.1f}s)")
 
+    # --- Optional LLM thesis overlay ---
+    llm_overlay: GraniteThesisOverlay | None = None
+    if bool(config.get("llm_overlay_enabled", False)):
+        print("  Initializing LLM thesis overlay...")
+        try:
+            llm_overlay = GraniteThesisOverlay(
+                config=config,
+                tickers=tickers,
+                thesis_dir=str(config.get("llm_thesis_dir", "Investment Theses")),
+                member_selection_file=config.get("llm_member_selection_file"),
+                start_date=str(start_date.date()),
+                end_date=str(end_date.date()),
+            )
+            if llm_overlay.has_signal():
+                print("    → LLM overlay enabled with thesis/member signal coverage")
+            else:
+                print("    → LLM overlay initialized but no usable thesis/member signal found")
+        except Exception as exc:
+            llm_overlay = None
+            print(f"    → LLM overlay unavailable: {exc}")
+
     # --- Walk-forward optimisation ---
     lambda_risk = float(config.get("lambda_risk_aversion", 1.0))
     tc = float(config.get("transaction_cost", 0.001))
@@ -157,6 +185,8 @@ def build_portfolio_matrix(config: dict | None = None, live: bool = False) -> pd
             print(f"  Rebalancing {idx + 1}/{total}  ({date.strftime('%Y-%m-%d')})...")
 
         alpha = blender.get_alpha_vector(date)
+        if llm_overlay is not None and llm_overlay.has_signal():
+            alpha = llm_overlay.adjust_alpha(date=date, alpha=alpha, tickers=tickers)
 
         try:
             sigma = risk_builder.get(date)
@@ -173,6 +203,13 @@ def build_portfolio_matrix(config: dict | None = None, live: bool = False) -> pd
             max_leverage=max_lev,
             max_position=max_pos,
         )
+        if llm_overlay is not None and llm_overlay.has_signal():
+            w_opt = llm_overlay.adjust_weights(
+                date=date,
+                weights=w_opt,
+                tickers=tickers,
+                sigma=sigma,
+            )
         weight_rows.append(w_opt)
         w_prev = w_opt
 
@@ -190,6 +227,13 @@ def build_portfolio_matrix(config: dict | None = None, live: bool = False) -> pd
         import matplotlib.pyplot as plt
         plt.ioff()
         plt.show()  # blocks until user closes the window
+
+    if llm_overlay is not None and llm_overlay.has_signal():
+        diagnostics = llm_overlay.diagnostics_frame()
+        if not diagnostics.empty:
+            diag_path = _outputs_dir() / "llm_overlay_diagnostics.csv"
+            diagnostics.to_csv(diag_path, index=False)
+            print(f"  ▶ LLM overlay diagnostics saved to {diag_path}")
 
     weights_df = pd.DataFrame(
         weight_rows,

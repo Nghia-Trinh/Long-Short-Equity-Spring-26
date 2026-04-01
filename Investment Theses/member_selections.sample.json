@@ -1,0 +1,7 @@
+[
+  {"ticker": "NVDA", "member": "alice", "base_weight": 0.03},
+  {"ticker": "AMD", "member": "bob", "base_weight": 0.02},
+  {"ticker": "AAPL", "member": "charlie", "base_weight": 0.025},
+  {"ticker": "MSFT", "member": "dana", "base_weight": 0.02},
+  {"ticker": "TSLA", "member": "erin", "base_weight": -0.015}
+]
