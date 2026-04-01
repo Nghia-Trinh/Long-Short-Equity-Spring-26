@@ -120,6 +120,18 @@ Useful display flags:
 - `--show` opens charts interactively (GUI backend required).
 - `--no-show` forces non-interactive execution (default), suitable for headless runs.
 
+### Option E: Model Results UI (thesis upload + feedback loop)
+```bash
+streamlit run Visualisation/model_results_app.py
+```
+
+This app provides:
+- investment thesis file upload (`.txt`, `.md`, `.csv`, `.json`)
+- model version testing with interactive adjustment levers
+- baseline vs selected-version performance comparison
+- readjustment feedback logging to `outputs/model_ui_feedback.csv`
+- light/dark theme toggle
+
 ## Configuration
 
 All strategy parameters are in `config.json`:
