@@ -4,6 +4,7 @@ Edit this file directly before running the pipeline.
 """
 
 from pathlib import Path
+import os
 
 # ---------------------------------------------------------------------------
 # API provider inputs (paste values directly)
@@ -31,6 +32,14 @@ SEC_IDENTITY = " ".join(
 # Backward-compatible aliases used by current collectors
 FINNHUB_KEY = FINNHUB_API_KEY
 FRED_KEY = FRED_API_KEY
+
+# FactSet SDK configuration (for LLM-oriented enrichment fetches)
+# Supported auth methods: "oauth" (preferred) or "apikey"
+FACTSET_AUTH_METHOD = os.getenv("FACTSET_AUTH_METHOD", "oauth").strip().lower()
+FACTSET_OAUTH_CONFIG_PATH = os.getenv("FACTSET_OAUTH_CONFIG_PATH", "").strip()
+FACTSET_USERNAME = os.getenv("FACTSET_USERNAME", "").strip()
+FACTSET_API_KEY = os.getenv("FACTSET_API_KEY", "").strip()
+FACTSET_DEFAULT_EXCHANGE = os.getenv("FACTSET_DEFAULT_EXCHANGE", "US").strip().upper()
 
 # Pipeline defaults (paths relative to this package directory, not the shell cwd)
 _PACKAGE_DIR = Path(__file__).resolve().parent
