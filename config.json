@@ -27,5 +27,19 @@
     "sizer_delta_a": 0.3,
     "sizer_cpr_b": 0.2,
     "sizer_vol_k": 0.5,
-    "base_position_size": 1.0
+    "base_position_size": 1.0,
+
+    "llm_overlay_enabled": false,
+    "llm_use_hf_model": false,
+    "llm_model_id": "ibm-granite/granite-3.3-2b-instruct",
+    "llm_thesis_dir": "Investment Theses",
+    "llm_member_selection_file": null,
+    "llm_max_prompt_chars": 3500,
+    "llm_thesis_alpha_scale": 0.35,
+    "llm_risk_alpha_penalty": 0.3,
+    "llm_conviction_weight_boost": 0.2,
+    "llm_conflict_weight_cut": 0.25,
+    "llm_member_weight_blend": 0.2,
+    "llm_risk_target_vol": 0.02,
+    "llm_risk_lookback_days": 365
 }

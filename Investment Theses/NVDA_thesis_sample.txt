@@ -1,0 +1,5 @@
+Ticker: NVDA
+Thesis:
+NVDA has strong quality, durable growth, and positive upside from AI demand.
+Recent execution suggests potential outperform with high conviction for a long bias.
+Risk notes: volatility and regulatory uncertainty remain relevant for position sizing.

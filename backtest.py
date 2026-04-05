@@ -33,6 +33,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+from LLM.data_fetcher import LLMDataFetcher
 from Portfolio.portfolio_matrix import build_portfolio_matrix
 from utils.data_loader import get_returns_pivot
 
@@ -159,6 +160,63 @@ def print_performance(pnl: pd.Series, initial_capital: float) -> dict:
     return metrics
 
 
+def _compute_earnings_season_metrics(
+    pnl: pd.Series,
+    season_windows: pd.DataFrame,
+    initial_capital: float,
+) -> pd.DataFrame:
+    """
+    Compute performance slices for each earnings season window.
+
+    Returns a table with one row per season containing total return,
+    annualized return/volatility, Sharpe, and season-day count.
+    """
+    if pnl.empty or season_windows.empty:
+        return pd.DataFrame(
+            columns=[
+                "season",
+                "start_date",
+                "end_date",
+                "days",
+                "total_return",
+                "annualised_return",
+                "annualised_volatility",
+                "sharpe_ratio",
+                "total_pnl",
+            ]
+        )
+
+    rows: list[dict] = []
+    ann_factor = 252
+    for _, row in season_windows.iterrows():
+        start = pd.Timestamp(row["start_date"])
+        end = pd.Timestamp(row["end_date"])
+        season_name = str(row["season"])
+
+        segment = pnl[(pnl.index >= start) & (pnl.index <= end)]
+        if segment.empty:
+            continue
+
+        total_return = float(segment.sum())
+        ann_return = float(segment.mean() * ann_factor)
+        ann_vol = float(segment.std() * np.sqrt(ann_factor)) if len(segment) > 1 else 0.0
+        sharpe = ann_return / ann_vol if ann_vol > 0 else 0.0
+        rows.append(
+            {
+                "season": season_name,
+                "start_date": start,
+                "end_date": end,
+                "days": int(len(segment)),
+                "total_return": total_return,
+                "annualised_return": ann_return,
+                "annualised_volatility": ann_vol,
+                "sharpe_ratio": sharpe,
+                "total_pnl": float(total_return * initial_capital),
+            }
+        )
+    return pd.DataFrame(rows)
+
+
 # ------------------------------------------------------------------
 # Main entry point
 # ------------------------------------------------------------------
@@ -168,11 +226,31 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run backtest")
     parser.add_argument("--live", action="store_true",
                         help="Open live matplotlib dashboard during backtest")
+    parser.add_argument(
+        "--enable-llm-overlay",
+        action="store_true",
+        help="Enable thesis-aware LLM overlay adjustments",
+    )
+    parser.add_argument(
+        "--llm-thesis-dir",
+        default="Investment Theses",
+        help="Directory containing thesis documents",
+    )
+    parser.add_argument(
+        "--llm-member-selections",
+        default=None,
+        help="Optional JSON/CSV file with member stock selections and base weights",
+    )
     args = parser.parse_args()
 
     print("Loading config...")
     config = _load_config()
     initial_capital = float(config.get("initial_capital", 1_000_000))
+    if args.enable_llm_overlay:
+        config["llm_overlay_enabled"] = True
+        config["llm_thesis_dir"] = args.llm_thesis_dir
+        config["llm_member_selection_file"] = args.llm_member_selections
+        print("  ▶ LLM thesis overlay enabled for this run")
 
     print("Building portfolio weights (Alpha + Risk + PreEarnings)...")
     if args.live:
@@ -186,9 +264,21 @@ if __name__ == "__main__":
 
     metrics = print_performance(pnl, initial_capital)
 
+    # Earnings-season slice metrics (optional, always attempted).
+    fetcher = LLMDataFetcher()
+    seasons = fetcher.build_earnings_season_windows()
+    season_metrics = _compute_earnings_season_metrics(
+        pnl=pnl,
+        season_windows=seasons,
+        initial_capital=initial_capital,
+    )
+
     # Save outputs
     out_dir = _outputs_dir()
     weights.to_csv(out_dir / "portfolio_weights.csv")
     pnl.to_csv(out_dir / "pnl.csv", header=True)
+    if not season_metrics.empty:
+        season_metrics.to_csv(out_dir / "earnings_season_metrics.csv", index=False)
+        print(f"Earnings season metrics saved to {out_dir / 'earnings_season_metrics.csv'}")
     print(f"Outputs saved to {out_dir}/")
     print("Done.")
