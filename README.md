@@ -111,6 +111,45 @@ Upload the entire project directory via quantconnect.com → Projects → Upload
 python Alpha/__init__.py --max-tickers 25 --keep-latest-charts 1 --keep-latest-excel 1
 ```
 
+## Netlify reroute for end-to-end process
+
+This repository now includes a Netlify function bridge that reroutes a single app endpoint to run the full equity pipeline process (optionally with FactSet enrichment).
+
+- Route: `POST /api/process` (rewritten by `netlify.toml` to `/.netlify/functions/factset-process`)
+- Function file: `netlify/functions/factset-process.js`
+- Method: `POST`
+- Body (JSON):
+  - `tickers`: required array of ticker symbols, e.g. `["AAPL", "MSFT"]`
+  - `months`: optional integer lookback, defaults to `6`
+  - `skipNews`: optional boolean, defaults to `true`
+  - `factsetEnrich`: optional boolean, defaults to `true`
+  - `factsetExchange`: optional string, defaults to `FACTSET_DEFAULT_EXCHANGE` or `US`
+  - `factsetIncludeRaw`: optional boolean, defaults to `false`
+
+Example request:
+
+```bash
+curl -X POST http://localhost:8888/api/process \
+  -H "Content-Type: application/json" \
+  -d '{"tickers":["AAPL"],"months":1,"skipNews":true,"factsetEnrich":true}'
+```
+
+The function writes a temporary ticker file and output folder, executes `equity_pipeline/pipeline.py`, and returns:
+
+- `metadata` from `run_metadata.json`
+- `stdoutTail` / `stderrTail` for quick debugging
+- runtime context (`tickers`, `months`, flags, and output directory)
+
+### Netlify local/dev usage
+
+Run your app locally through Netlify so the reroute works:
+
+```bash
+netlify dev
+```
+
+If you want a static site fallback target, set `NETLIFY_WEB_DIR` (defaults to `.`).
+
 All available tickers with strict cleanup:
 ```bash
 python Alpha/__init__.py --all-tickers --no-show --keep-latest-charts 1 --keep-latest-excel 1

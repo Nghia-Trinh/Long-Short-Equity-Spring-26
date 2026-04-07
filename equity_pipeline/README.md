@@ -21,7 +21,7 @@ Default benchmark is `^GSPC` (S&P 500). Defaults for paths and lookback live in 
   pip install -r requirements.txt
   ```
 
-  > **Note:** `requirements.txt` currently lists some packages twice with different pins. `pip` applies the last pin per package. For reproducible installs, consider deduplicating that file to one pin per dependency.
+  > **Note:** `requirements.txt` is deduplicated to one pin per package to keep installs reproducible.
 
 ### Python packages
 
@@ -43,6 +43,10 @@ Edit **`config.py`** before running:
 - **Finnhub**: `FINNHUB_API_KEY` (and related URLs if you customize them).
 - **FRED**: `FRED_API_KEY` (alias `FRED_KEY` for collectors).
 - **SEC / EdgarTools**: `SEC_IDENTITY` is built from name / email / organization; SEC expects a truthful `User-Agent`-style identity string.
+- **FactSet (optional LLM enrichment)**:
+  - `FACTSET_AUTH_METHOD=oauth` (preferred) with `FACTSET_OAUTH_CONFIG_PATH=/absolute/path/to/app-config.json`
+  - or `FACTSET_AUTH_METHOD=apikey` with `FACTSET_USERNAME=USERNAME-SERIAL` and `FACTSET_API_KEY=API-KEY`
+  - Optional: `FACTSET_DEFAULT_EXCHANGE=US` (used for ticker-to-identifier conversion, e.g. `AAPL-US`)
 
 If `FRED_KEY` is empty, macro indicators are skipped (warnings only). If **EdgarTools** is not installed, SEC filing collection logs a warning and returns empty objects.
 
@@ -65,6 +69,9 @@ If `FRED_KEY` is empty, macro indicators are skipped (warnings only). If **Edgar
 | `--output DIR` | Output root (default: `equity_data` under this package) |
 | `--months N` | Lookback window in months (default: `MONTHS` in `config.py`) |
 | `--skip-news` | Skip Finnhub news collection (still writes empty `news.json`) |
+| `--factset-enrich` | Add FactSet entity context per ticker for LLM workflows |
+| `--factset-exchange EX` | Override exchange suffix in FactSet IDs (e.g. `US`) |
+| `--factset-include-raw` | Include full raw FactSet API payload in output |
 
 ## Output layout
 
@@ -80,7 +87,25 @@ equity_data/
     fundamentals.json
     sec_filings.json
     dynamics.json
+    factset_entity_context.json   # when --factset-enrich is enabled
 ```
+
+## FactSet LLM fetcher usage
+
+This repository now includes `collectors/factset_llm_fetcher.py`, a reusable FactSet-backed fetcher for LLM context building.
+
+Example (run from `equity_pipeline/`):
+
+```bash
+python -c "from collectors.factset_llm_fetcher import fetch_factset_entity_context_for_ticker; import json; print(json.dumps(fetch_factset_entity_context_for_ticker('AAPL'), indent=2)[:2000])"
+```
+
+It returns a normalized payload with:
+
+- `provider`, `dataset`
+- `requested_ids`
+- `data` records with key entity fields (`fsym_id`, `entity_name`, `ticker_exchange`, etc.)
+- `errors` (if returned by FactSet)
 
 ## Project layout
 

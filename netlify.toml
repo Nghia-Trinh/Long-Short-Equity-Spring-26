@@ -1,7 +1,19 @@
-# netlify.toml
 [build]
   command = "hugo"
   publish = "public"
+  functions = "netlify/functions"
 
 [build.environment]
   HUGO_VERSION = "0.111.3"
+
+[[redirects]]
+  from = "/api/process"
+  to = "/.netlify/functions/factset-process"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/llm-factset/*"
+  to = "/.netlify/functions/factset-process"
+  status = 200
+  force = true

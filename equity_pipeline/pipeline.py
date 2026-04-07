@@ -9,6 +9,11 @@ from pathlib import Path
 from typing import Any
 
 from collectors.fundamentals import fetch_fundamentals
+from collectors.factset_llm_fetcher import (
+    FactSetConfigurationError,
+    FactSetDependencyError,
+    fetch_factset_entity_context_for_ticker,
+)
 from collectors.macro import compute_sector_performance, fetch_macro_indicators
 from collectors.news import fetch_news
 from collectors.prices import batch_download, split_ticker_prices
@@ -27,6 +32,21 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--output", default=str(OUTPUT_DIR), help="Output directory")
     parser.add_argument("--months", type=int, default=MONTHS, help="Lookback window in months")
     parser.add_argument("--skip-news", action="store_true", help="Skip Finnhub news collection")
+    parser.add_argument(
+        "--factset-enrich",
+        action="store_true",
+        help="Fetch FactSet entity context for each ticker (LLM enrichment payload).",
+    )
+    parser.add_argument(
+        "--factset-exchange",
+        default=None,
+        help="Ticker exchange suffix for FactSet identifier format, e.g. US (defaults to config).",
+    )
+    parser.add_argument(
+        "--factset-include-raw",
+        action="store_true",
+        help="Include full raw FactSet API payload in output JSON.",
+    )
     return parser.parse_args()
 
 
@@ -85,8 +105,12 @@ def run_pipeline() -> dict[str, Any]:
         LOGGER.exception("Sector performance computation failed.")
         save_json({}, macro_dir / "sector_performance.json")
 
+    if args.factset_enrich:
+        LOGGER.info("FactSet enrichment enabled for per-ticker LLM context.")
+
     LOGGER.info("Phase 2/3: per-ticker collection")
     successful_tickers = 0
+    factset_successful = 0
 
     for index, ticker in enumerate(tickers, start=1):
         LOGGER.info("[%d/%d] -- %s --", index, len(tickers), ticker)
@@ -140,6 +164,26 @@ def run_pipeline() -> dict[str, Any]:
             LOGGER.exception("Dynamics compute failed for %s", ticker)
             save_json({}, ticker_dir / "dynamics.json")
 
+        if args.factset_enrich:
+            try:
+                factset_context = fetch_factset_entity_context_for_ticker(
+                    ticker,
+                    exchange=args.factset_exchange,
+                    include_raw=args.factset_include_raw,
+                )
+                save_json(factset_context, ticker_dir / "factset_entity_context.json")
+                factset_successful += 1
+            except (FactSetConfigurationError, FactSetDependencyError) as exc:
+                ticker_failed = True
+                _record_error(errors, ticker, f"factset failed: {exc}")
+                LOGGER.warning("FactSet enrichment unavailable for %s: %s", ticker, exc)
+                save_json({}, ticker_dir / "factset_entity_context.json")
+            except Exception as exc:  # noqa: BLE001
+                ticker_failed = True
+                _record_error(errors, ticker, f"factset failed: {exc}")
+                LOGGER.exception("FactSet enrichment failed for %s", ticker)
+                save_json({}, ticker_dir / "factset_entity_context.json")
+
         if not ticker_failed:
             successful_tickers += 1
 
@@ -154,6 +198,9 @@ def run_pipeline() -> dict[str, Any]:
         "tickers_with_errors": len([name for name in tickers if name in errors]),
         "months": args.months,
         "skip_news": bool(args.skip_news),
+        "factset_enrich": bool(args.factset_enrich),
+        "factset_successful": factset_successful if args.factset_enrich else 0,
+        "factset_include_raw": bool(args.factset_include_raw),
         "benchmark": BENCHMARK_TICKER,
         "errors": errors,
     }
