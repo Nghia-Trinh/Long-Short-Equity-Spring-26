@@ -1,5 +1,10 @@
 [build]
+  command = "hugo"
+  publish = "public"
   functions = "netlify/functions"
+
+[build.environment]
+  HUGO_VERSION = "0.111.3"
 
 [[redirects]]
   from = "/api/process"
