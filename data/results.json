@@ -1,0 +1,303 @@
+{
+  "generated_at_utc": "2026-04-07T05:06:38.468147Z",
+  "colab_notebook_github_url": "https://colab.research.google.com/github/Nghia-Trinh/Long-Short-Equity-Spring-26/blob/main/granite_timeseries_patchtsmixer.ipynb",
+  "model_results": {
+    "source_file": "outputs/pnl.csv",
+    "rows": 2544,
+    "active_start_date": "2018-01-03",
+    "non_zero_days": 2040,
+    "cumulative_return": 0.09363555793864387,
+    "average_daily_return": 3.987080001515274e-05,
+    "stdev_daily_return": 0.0030600458227178365,
+    "top_5_days": [
+      {
+        "trade_date": "2020-03-19",
+        "portfolio_return": 0.016331893879644337
+      },
+      {
+        "trade_date": "2024-07-31",
+        "portfolio_return": 0.014452841008152011
+      },
+      {
+        "trade_date": "2024-12-11",
+        "portfolio_return": 0.013480351348704565
+      },
+      {
+        "trade_date": "2020-09-01",
+        "portfolio_return": 0.012017392144392304
+      },
+      {
+        "trade_date": "2024-12-04",
+        "portfolio_return": 0.011485500777827383
+      }
+    ],
+    "bottom_5_days": [
+      {
+        "trade_date": "2020-03-25",
+        "portfolio_return": -0.027432953118641898
+      },
+      {
+        "trade_date": "2020-11-09",
+        "portfolio_return": -0.025812899442253238
+      },
+      {
+        "trade_date": "2025-01-27",
+        "portfolio_return": -0.01619119179269503
+      },
+      {
+        "trade_date": "2020-03-18",
+        "portfolio_return": -0.013919336109758127
+      },
+      {
+        "trade_date": "2024-07-17",
+        "portfolio_return": -0.013492430696172028
+      }
+    ],
+    "last_20_days": [
+      {
+        "trade_date": "2026-01-16",
+        "portfolio_return": -0.001667201504952177
+      },
+      {
+        "trade_date": "2026-01-20",
+        "portfolio_return": -0.002788095657526271
+      },
+      {
+        "trade_date": "2026-01-21",
+        "portfolio_return": 0.0016937570010881282
+      },
+      {
+        "trade_date": "2026-01-22",
+        "portfolio_return": 0.004584140156514162
+      },
+      {
+        "trade_date": "2026-01-23",
+        "portfolio_return": -0.0009506620521880176
+      },
+      {
+        "trade_date": "2026-01-26",
+        "portfolio_return": 0.006624110766506948
+      },
+      {
+        "trade_date": "2026-01-27",
+        "portfolio_return": -0.004388531894953665
+      },
+      {
+        "trade_date": "2026-01-28",
+        "portfolio_return": -0.0018378858723301099
+      },
+      {
+        "trade_date": "2026-01-29",
+        "portfolio_return": -0.006379462548122399
+      },
+      {
+        "trade_date": "2026-01-30",
+        "portfolio_return": -0.004552689443408431
+      },
+      {
+        "trade_date": "2026-02-02",
+        "portfolio_return": 0.008059057834150441
+      },
+      {
+        "trade_date": "2026-02-03",
+        "portfolio_return": -0.01306430064891138
+      },
+      {
+        "trade_date": "2026-02-04",
+        "portfolio_return": 0.010035497892126828
+      },
+      {
+        "trade_date": "2026-02-05",
+        "portfolio_return": 0.0055487004207185504
+      },
+      {
+        "trade_date": "2026-02-06",
+        "portfolio_return": -0.002511723021086172
+      },
+      {
+        "trade_date": "2026-02-09",
+        "portfolio_return": -0.0009235771435213427
+      },
+      {
+        "trade_date": "2026-02-10",
+        "portfolio_return": -0.0005808371315742852
+      },
+      {
+        "trade_date": "2026-02-11",
+        "portfolio_return": -0.006488400803556046
+      },
+      {
+        "trade_date": "2026-02-12",
+        "portfolio_return": -0.005006975963185868
+      },
+      {
+        "trade_date": "2026-02-13",
+        "portfolio_return": -0.0002234883797606846
+      }
+    ]
+  },
+  "pipeline_run_metadata": {
+    "started_at_utc": "2026-03-29T01:16:19.373224+00:00",
+    "finished_at_utc": "2026-03-29T01:16:52.106938+00:00",
+    "duration_seconds": 32.734,
+    "tickers_total": 2,
+    "tickers_successful": 2,
+    "tickers_with_errors": 0,
+    "months": 6,
+    "skip_news": false,
+    "benchmark": "^GSPC",
+    "errors": {}
+  },
+  "finnhub_results": {
+    "AMD": {
+      "total_articles": 1414,
+      "latest_10": [
+        {
+          "headline": "Analyst Signals Caution Amid Demand Concerns For Advanced Micro Devices (AMD)",
+          "source": "Yahoo",
+          "datetime": "2026-03-28T15:18:52Z",
+          "url": "https://finnhub.io/api/news?id=eb64d555ca676fc34fedff748178efbba7f8c56e87f4e52426d2abf00e3e7e9f",
+          "summary": "Advanced Micro Devices Inc. (NASDAQ:AMD) is one of the 10 High Growth Mega Cap Stocks to Buy and Hold for Next 10 Years. On March 24, Bernstein analyst Stacy Rasgon signalled caution to investors in Advanced Micro Devices Inc. (NASDAQ:AMD). He suggests investors should wait and see whether demand for AMD chips comes from people [\u2026]"
+        },
+        {
+          "headline": "Intel Price Hikes And Supply Strains Test Recent Share Momentum",
+          "source": "Yahoo",
+          "datetime": "2026-03-28T15:05:02Z",
+          "url": "https://finnhub.io/api/news?id=af606ac2c0c1740985611097fa623a2155963ff969a767d3278532c4c6d5b253",
+          "summary": "Intel and AMD are raising CPU prices across product lines as supply constraints deepen and delivery lead times stretch. Lead times for some PC and server CPUs are extending to as long as six months, affecting hardware vendors, cloud providers, and enterprise buyers. Chipmakers are prioritizing higher margin customers as AI related demand for compute capacity strains existing manufacturing capacity. Intel, traded as NasdaqGS:INTC, is stepping into this pricing shift with its shares at..."
+        },
+        {
+          "headline": "Why you should 'never count out' Google",
+          "source": "Yahoo",
+          "datetime": "2026-03-27T21:54:24Z",
+          "url": "https://finnhub.io/api/news?id=7cfa5fdbb1288c0802906f231f43df7c730601ba8598f6748a3f1c4eaf31df7e",
+          "summary": "On this segment of Market Madness, GraniteShares founder and CEO Will Rhind shares his stock picks for each matchup: Palantir (PLTR) vs. Robinhood (HOOD), Eli Lilly (LLY) vs. Walmart (WMT), Google (GOOG, GOOGL) vs. AMD (AMD), and Tesla (TSLA) vs. Bank of America (BAC)."
+        },
+        {
+          "headline": "Stock Market Today, March 27: Nvidia Slides as Valuation Drops Below S&P 500 on Forward Earnings",
+          "source": "Yahoo",
+          "datetime": "2026-03-27T21:22:35Z",
+          "url": "https://finnhub.io/api/news?id=6c08aa5e4d864374f1148f1a3d00989739b74e0e8a0c2f83f840eeb68d2406af",
+          "summary": "Today, March 27, 2026, investors confront a rare moment: the AI chip leader priced below the broader market\u2019s growth expectations."
+        },
+        {
+          "headline": "Xanadu IPO: CEO on AMD partnership, quantum computing, and more",
+          "source": "Yahoo",
+          "datetime": "2026-03-27T21:18:25Z",
+          "url": "https://finnhub.io/api/news?id=202db8a3c638f62c46dae51a8b62dcd1985ae1854908193e6d2b31f348870fb2",
+          "summary": "Quantum-computing company Xanadu (XNDU) made its initial public offering (IPO) on both the Nasdaq Composite (^IXIC) and Toronto Stock Exchange.Xanadu CEO Christian Weedbrook chats with Market Domination host Josh Lipton about quantum computing, what makes Xanadu valuable, the company's many key partnerships, and more."
+        },
+        {
+          "headline": "Nvidia, AMD and Intel Lead Chip Stocks Sell-Off Amid Middle East Tension",
+          "source": "Yahoo",
+          "datetime": "2026-03-27T19:44:39Z",
+          "url": "https://finnhub.io/api/news?id=ffea887b739325c388f0c06a788adf946ffbb74150382595357b2ba029f02a0b",
+          "summary": "War Jitters Torpedo Chip Stocks: Nvidia, Broadcom, Intel All in the Red"
+        },
+        {
+          "headline": "Nvidia Stock Is Now Cheaper Than the S&P 500",
+          "source": "Yahoo",
+          "datetime": "2026-03-27T18:18:00Z",
+          "url": "https://finnhub.io/api/news?id=991eacf8f7027d9c240931ca35c4b5bfba17fe6e9f066138f99bfd72e4d9115e",
+          "summary": "Nvidia stock now trades at at a discount to the S&P 500 index on its forward price-to-earnings ratio."
+        },
+        {
+          "headline": "PlayStation 5 Gets a Price Hike. Micron and Sandisk Stocks Rise.",
+          "source": "Yahoo",
+          "datetime": "2026-03-27T17:47:00Z",
+          "url": "https://finnhub.io/api/news?id=7e1cb7fa63689f540cc4e167d32d14d151145db015b5ceecf92ada7b34c6df89",
+          "summary": "Sony  is raising the prices of its PlayStation consoles because of \u201ccontinued pressures in the global economic landscape,\u201d the company said in a blog post Friday.  In the U.S., the PS5 and PS5 Digital Edition will get $100 price hikes to $649.99 and $599.99, respectively.  The recommended retail prices go into effect April 2, marking the PlayStation\u2019s second price hike in the U.S. in less than eight months."
+        },
+        {
+          "headline": "Tech stocks suffer worst week in nearly a year, driven down by war worries, Meta legal woes",
+          "source": "CNBC",
+          "datetime": "2026-03-27T16:24:53Z",
+          "url": "https://finnhub.io/api/news?id=69704dfd40ab1ae23922ff8177c56b9926f1a21e6db632105782337b09f4c21d",
+          "summary": "Meta's twin legal defeats this week and a big sell-off in Micron spurred a drop in technology stocks, which were broadly hit by rising oil prices. "
+        },
+        {
+          "headline": "Can Intel's Core Ultra Series 3 Launch Propel Its Shares?",
+          "source": "Yahoo",
+          "datetime": "2026-03-27T15:58:00Z",
+          "url": "https://finnhub.io/api/news?id=382d0d000e7be2760d6efdfd0e9d3fada378821e69b82bc1cc9cb6acfd4bd263",
+          "summary": "INTC launches new business laptops, desktops and workstations with Core Ultra Series 3, vPro security and Arc Pro GPUs for modern workplaces."
+        }
+      ]
+    },
+    "NVDA": {
+      "total_articles": 1473,
+      "latest_10": [
+        {
+          "headline": "Prediction: These 2 Stocks Will Be Worth More Than Apple in a Decade",
+          "source": "Yahoo",
+          "datetime": "2026-03-28T23:35:00Z",
+          "url": "https://finnhub.io/api/news?id=10acc2f935628113b3cb3cbd319f35948f5b292540ea1db597fd5204345ce2ee",
+          "summary": "These \"Mag 7\" rivals could supplant Apple's market cap before 2035."
+        },
+        {
+          "headline": "Here's What Investors Need to Know About AST SpaceMobile Stock's Recent Pullback",
+          "source": "Yahoo",
+          "datetime": "2026-03-28T18:45:00Z",
+          "url": "https://finnhub.io/api/news?id=e991e584c2c36b53532f919331ee16f3a71705558e65364ca4f838443fae7483",
+          "summary": "The stock has been experiencing some turbulence: Is this the right time to climb on board?"
+        },
+        {
+          "headline": "MercadoLibre Stock Is on Sale. Here's What $5,000 Invested Today Could Do for Your Portfolio.",
+          "source": "Yahoo",
+          "datetime": "2026-03-28T18:05:00Z",
+          "url": "https://finnhub.io/api/news?id=a8530b9870ff3bea8dec0984ef78eb89a47c388d47c5b94d956d101acccc7e13",
+          "summary": "The Latin American e-commerce leader has pulled back lately. Is it a buying opportunity?"
+        },
+        {
+          "headline": "1 No-Brainer Semiconductor Stock to Buy With $1,000 Right Now",
+          "source": "Yahoo",
+          "datetime": "2026-03-28T17:05:00Z",
+          "url": "https://finnhub.io/api/news?id=c077e3de6e966b078ef5a71ac84b8bb6fba6fda5a0b3ed7ca12b9b57029ce1f4",
+          "summary": "Taiwan Semiconductor Manufacturing is one of the best ways to invest in the chip space."
+        },
+        {
+          "headline": "Progressive Had a Remarkable Run. Now Comes the Hard Part.",
+          "source": "Yahoo",
+          "datetime": "2026-03-28T16:25:00Z",
+          "url": "https://finnhub.io/api/news?id=27674011fa8116fb02394eb6de86d1a7afc709e9312c75b9abb6a374cf9af058",
+          "summary": "Progressive still runs a tight underwriting ship, but the outlook for its earnings power is less certain."
+        },
+        {
+          "headline": "Streaming Wars: 1 Netflix Rival Dominating the Industry",
+          "source": "Yahoo",
+          "datetime": "2026-03-28T16:05:00Z",
+          "url": "https://finnhub.io/api/news?id=5adfd457c7560ae6c4ea6b7cc4199d7d16b912f6ffeb93a80435f34a52a17476",
+          "summary": "It's time for investors to question whether Netflix is the best streaming stock out there."
+        },
+        {
+          "headline": "This Retail Giant Is Trading for Half the Price of Walmart and Nearly One-Third the Price of Costco, but Growing 3 Times as Fast",
+          "source": "Yahoo",
+          "datetime": "2026-03-28T15:35:00Z",
+          "url": "https://finnhub.io/api/news?id=f2d71c9ba13f726d9b94e040df903f226a4f797669275376dc9fc4d1fea2f77d",
+          "summary": "Investors are getting this stock at a sale price right now."
+        },
+        {
+          "headline": "Why Retirees Should Consider These 3 Ultra-Safe Dividend Stocks Now",
+          "source": "Yahoo",
+          "datetime": "2026-03-28T15:20:00Z",
+          "url": "https://finnhub.io/api/news?id=cd9a85f541f49c2a15e07fbd886e14bfa7dc6aba33a3edc96c12242410dc324e",
+          "summary": "High yields? Check. Decades of steady increases? Check. You can own these dividend stalwarts and sleep well at night."
+        },
+        {
+          "headline": "Here\u2019s What The New AI Chip Means For Arm Holdings (ARM)",
+          "source": "Yahoo",
+          "datetime": "2026-03-28T15:18:54Z",
+          "url": "https://finnhub.io/api/news?id=0112cd5b04b947f10a25bad02776227285fce3dba259aa4b80c2170622bf7996",
+          "summary": "Arm Holdings PLC (NASDAQ:ARM) is one of the 10 High Growth Mega Cap Stocks to Buy and Hold for Next 10 Years. On March 24, Arm Holdings PLC (NASDAQ:ARM) announced that it was introducing a new AI chip called the AGI CPU. The new chip is intended to meet the computing needs of agentic AI, [\u2026]"
+        },
+        {
+          "headline": "Analyst Signals Caution Amid Demand Concerns For Advanced Micro Devices (AMD)",
+          "source": "Yahoo",
+          "datetime": "2026-03-28T15:18:52Z",
+          "url": "https://finnhub.io/api/news?id=eb64d555ca676fc34fedff748178efbba7f8c56e87f4e52426d2abf00e3e7e9f",
+          "summary": "Advanced Micro Devices Inc. (NASDAQ:AMD) is one of the 10 High Growth Mega Cap Stocks to Buy and Hold for Next 10 Years. On March 24, Bernstein analyst Stacy Rasgon signalled caution to investors in Advanced Micro Devices Inc. (NASDAQ:AMD). He suggests investors should wait and see whether demand for AMD chips comes from people [\u2026]"
+        }
+      ]
+    }
+  }
+}

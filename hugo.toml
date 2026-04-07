@@ -1,0 +1,6 @@
+baseURL = "/"
+languageCode = "en-us"
+title = "Model & FinnHub Results"
+
+# Include tracked chart artifacts from previous agent outputs.
+staticDir = ["static", "outputs/charts"]
