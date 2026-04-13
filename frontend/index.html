@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Investment Thesis Copilot</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="left-nav">
+        <div class="brand">
+          <div class="brand-dot"></div>
+          <div>
+            <p class="brand-title">Thesis Copilot</p>
+            <p class="brand-subtitle">Claude-style interface</p>
+          </div>
+        </div>
+        <button id="newChatBtn" class="secondary-btn">+ New chat</button>
+        <div class="history">
+          <p class="history-title">Conversation</p>
+          <button class="history-item active">Investment theses</button>
+        </div>
+      </aside>
+
+      <main class="chat-panel">
+        <header class="chat-header">
+          <h1>Investment Thesis Assistant</h1>
+          <p>
+            Ask questions, then save ideas with <code>/add</code> commands or
+            the form at right.
+          </p>
+        </header>
+
+        <section id="messageList" class="message-list"></section>
+
+        <div class="prompt-chips">
+          <button class="chip-btn" data-chip="Draft a thesis for NVDA with 12-month horizon.">
+            Draft NVDA thesis
+          </button>
+          <button class="chip-btn" data-chip="How should I stress-test downside risks for a growth stock thesis?">
+            Risk stress test
+          </button>
+          <button class="chip-btn" data-chip="/add company: Cheniere Energy; ticker: LNG; horizon: 12 months; thesis: Structural LNG demand growth supports margin expansion.; catalysts: New LNG contracts, export capacity growth.; risks: Commodity price volatility, project delays.">
+            Save LNG thesis
+          </button>
+        </div>
+
+        <form id="chatForm" class="composer">
+          <textarea
+            id="chatInput"
+            placeholder="Message Thesis Copilot..."
+            rows="1"
+          ></textarea>
+          <button type="submit" class="primary-btn">Send</button>
+        </form>
+      </main>
+
+      <aside class="thesis-panel">
+        <h2>Saved Investment Theses</h2>
+        <p class="panel-subtitle">Add additional theses and manage your library.</p>
+
+        <form id="thesisForm" class="thesis-form">
+          <label>
+            Company
+            <input id="companyInput" type="text" required />
+          </label>
+          <label>
+            Ticker
+            <input id="tickerInput" type="text" maxlength="10" />
+          </label>
+          <label>
+            Horizon
+            <input id="horizonInput" type="text" placeholder="e.g. 6-12 months" />
+          </label>
+          <label>
+            Core thesis
+            <textarea id="thesisInput" rows="3" required></textarea>
+          </label>
+          <label>
+            Catalysts
+            <textarea id="catalystsInput" rows="2"></textarea>
+          </label>
+          <label>
+            Key risks
+            <textarea id="risksInput" rows="2"></textarea>
+          </label>
+          <button type="submit" class="primary-btn">Add thesis</button>
+        </form>
+
+        <div id="thesisList" class="thesis-list"></div>
+      </aside>
+    </div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
