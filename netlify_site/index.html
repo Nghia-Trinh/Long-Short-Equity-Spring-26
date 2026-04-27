@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>LLM Long/Short Equity | Netlify</title>
+    <style>
+      :root { color-scheme: dark; --bg:#0f172a; --panel:#111827; --soft:#1f2937; --border:#334155; --text:#e5e7eb; --muted:#94a3b8; --green:#22c55e; --red:#ef4444; --blue:#60a5fa; }
+      * { box-sizing: border-box; } body { margin:0; font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif; background: radial-gradient(circle at top left, #1e3a8a55, transparent 36%), var(--bg); color:var(--text); }
+      header, main, footer { max-width: 1220px; margin: 0 auto; padding: 28px; } header { padding-bottom: 8px; } h1 { margin:0; font-size: clamp(32px, 5vw, 56px); letter-spacing:-.04em; } h2 { margin:0 0 12px; } h3 { margin:18px 0 10px; } p { color:var(--muted); line-height:1.6; }
+      .eyebrow, .pill { display:inline-block; color:var(--blue); font-size:12px; letter-spacing:.1em; text-transform:uppercase; font-weight:700; } .pill { border:1px solid var(--border); border-radius:999px; padding:5px 9px; color:var(--muted); }
+      .panel { background: color-mix(in srgb, var(--panel) 90%, transparent); border:1px solid var(--border); border-radius:18px; padding:18px; box-shadow:0 16px 40px #02061755; margin-bottom:18px; }
+      .hero { display:grid; grid-template-columns:1.35fr .8fr; gap:18px; align-items:stretch; } .kpis { display:grid; grid-template-columns:repeat(6,minmax(120px,1fr)); gap:12px; margin:18px 0; }
+      .kpi { background:var(--soft); border:1px solid var(--border); border-radius:14px; padding:14px; } .kpi span { display:block; color:var(--muted); font-size:12px; text-transform:uppercase; letter-spacing:.08em; } .kpi strong { display:block; margin-top:8px; font-size:24px; }
+      .tabs { display:flex; flex-wrap:wrap; gap:10px; margin:22px 0; } .tab { border:1px solid var(--border); background:var(--soft); color:var(--text); border-radius:999px; padding:10px 14px; cursor:pointer; } .tab.active { background:var(--blue); color:#06111f; border-color:var(--blue); font-weight:800; }
+      .tab-panel { display:none; } .tab-panel.active { display:block; } .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:18px; } .chart-card { background:#0b1220; border:1px solid var(--border); border-radius:14px; padding:10px; overflow:hidden; }
+      table { width:100%; border-collapse:collapse; font-size:14px; } th, td { padding:9px 8px; border-bottom:1px solid var(--border); text-align:left; vertical-align:top; } th { color:var(--muted); font-size:12px; text-transform:uppercase; letter-spacing:.08em; }
+      .table-wrap { overflow:auto; max-height:470px; } .long { color:var(--green); font-weight:800; } .short { color:var(--red); font-weight:800; } .muted { color:var(--muted); } .bar-row { display:grid; grid-template-columns:55px 1fr 70px; align-items:center; gap:10px; margin:8px 0; } .bar { height:18px; border-radius:999px; } .bar.long { background:var(--green); } .bar.short { background:var(--red); justify-self:end; } .note { margin-top:14px; padding:14px; border:1px solid var(--border); border-radius:14px; background:var(--soft); color:var(--muted); }
+      a { color:var(--blue); } footer { color:var(--muted); }
+      @media (max-width: 900px) { .hero, .grid-2 { grid-template-columns:1fr; } .kpis { grid-template-columns:repeat(2,1fr); } header, main, footer { padding:18px; } }
+    </style>
+  </head>
+  <body>
+    <header>
+      <span class="pill">Netlify deployment view</span>
+      <h1>LLM-Assisted Long/Short Equity Trading Model</h1>
+      <p>Static Netlify route for the thesis-driven U.S. equities model: Alpha Matrix, Risk Matrix, Portfolio Weight Sizing Matrix, and four-month paper-trade results.</p>
+    </header>
+    <main>
+      <section class="hero">
+        <div class="panel">
+          <p class="eyebrow">Model results</p>
+          <h2>Four-month paper trade</h2>
+          <div id="kpis" class="kpis"></div>
+          <div class="chart-card"><svg id="pnlChart" viewBox="0 0 920 300" role="img" aria-label="Cumulative return chart"></svg></div>
+        </div>
+        <div class="panel">
+          <p class="eyebrow">Deployment status</p>
+          <h2>Netlify redirect target</h2>
+          <p id="statusText">Loading model artifacts...</p>
+          <div class="note">Live Finnhub calls remain available through the Python/Streamlit model when API credentials are configured. Netlify serves the latest committed result artifacts.</div>
+        </div>
+      </section>
+
+      <nav class="tabs" aria-label="Dashboard tabs">
+        <button class="tab active" data-tab="weights">Weights</button>
+        <button class="tab" data-tab="matrices">Matrices</button>
+        <button class="tab" data-tab="signals">Signals</button>
+        <button class="tab" data-tab="theses">Theses + Finnhub</button>
+        <button class="tab" data-tab="copilot">Investment Thesis Copilot</button>
+      </nav>
+
+      <section id="weights" class="tab-panel active"><div class="grid-2"><div class="panel"><h2>Latest weight sizing matrix</h2><div id="weightsBars"></div></div><div class="panel"><h2>Long top / short bottom</h2><div id="weightsTable" class="table-wrap"></div></div></div></section>
+      <section id="matrices" class="tab-panel"><div class="grid-2"><div class="panel"><h2>Alpha Matrix</h2><div id="alphaTable" class="table-wrap"></div></div><div class="panel"><h2>Risk Matrix</h2><div id="riskTable" class="table-wrap"></div></div></div></section>
+      <section id="signals" class="tab-panel"><div class="panel"><h2>Signal components</h2><p>Call/put imbalance, net delta, and IV skew are model proxies when option-chain API data is unavailable.</p><div id="signalsTable" class="table-wrap"></div></div></section>
+      <section id="theses" class="tab-panel"><div class="panel"><h2>Investment basket and Finnhub status</h2><div id="thesesTable" class="table-wrap"></div><div class="note"><strong>LLM overlay role:</strong> human analysts define theses; the model automates news enrichment, option-signal proxies, risk calculations, and portfolio sizing.</div></div></section>
+      <section id="copilot" class="tab-panel"><div class="panel"><h2>Investment Thesis Copilot</h2><p>The Streamlit deployment includes the full chat/form copilot GUI. On Netlify, this static redirect page presents model artifacts and points analysts back to the Python app for interactive thesis entry.</p><div class="note">Use <code>/streamlit</code> or <code>/model-results</code> on Netlify to return to this deployed results view.</div></div></section>
+    </main>
+    <footer>Built from <code>outputs/llm_long_short</code> artifacts.</footer>
+
+    <script>
+      const artifact = (name) => `/outputs/llm_long_short/${name}`;
+      const pct = (value) => `${(Number(value) * 100).toFixed(2)}%`;
+      const num = (value, digits = 2) => { const n = Number(value); return (Math.abs(n) < 0.005 ? 0 : n).toFixed(digits); };
+      async function text(path) { const response = await fetch(path); if (!response.ok) throw new Error(`Could not load ${path}`); return response.text(); }
+      function parseCsv(raw) {
+        const rows = raw.trim().split(/\r?\n/).map((line) => { const out = []; let current = ""; let quoted = false; for (let i = 0; i < line.length; i += 1) { const ch = line[i]; if (ch === '"') quoted = !quoted; else if (ch === "," && !quoted) { out.push(current); current = ""; } else current += ch; } out.push(current); return out; });
+        const headers = rows.shift(); return rows.map((row) => Object.fromEntries(headers.map((h, i) => [h, row[i] ?? ""])));
+      }
+      function renderTable(target, rows, columns) { document.getElementById(target).innerHTML = `<table><thead><tr>${columns.map((c) => `<th>${c.label}</th>`).join("")}</tr></thead><tbody>${rows.map((row) => `<tr>${columns.map((c) => `<td>${c.render ? c.render(row[c.key], row) : row[c.key]}</td>`).join("")}</tr>`).join("")}</tbody></table>`; }
+      function renderPnl(rows) {
+        const svg = document.getElementById("pnlChart"); const w = 920, h = 300, pad = 34; const ys = rows.map((r) => Number(r.cumulative_return)); const min = Math.min(0, ...ys), max = Math.max(...ys); const x = (i) => pad + (i / Math.max(1, ys.length - 1)) * (w - pad * 2); const y = (v) => h - pad - ((v - min) / Math.max(0.0001, max - min)) * (h - pad * 2);
+        const d = ys.map((v, i) => `${i ? "L" : "M"}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(" "); const zero = y(0); svg.innerHTML = `<line x1="${pad}" x2="${w-pad}" y1="${zero}" y2="${zero}" stroke="#334155"/><path d="${d}" fill="none" stroke="#60a5fa" stroke-width="4"/><text x="${pad}" y="24" fill="#94a3b8">${pct(max)}</text><text x="${pad}" y="${h-8}" fill="#94a3b8">${pct(min)}</text>`;
+      }
+      function renderBars(rows) { const maxAbs = Math.max(...rows.map((r) => Math.abs(r.weight)), 0.01); document.getElementById("weightsBars").innerHTML = rows.map((r) => `<div class="bar-row"><strong>${r.ticker}</strong><div class="bar ${r.weight >= 0 ? "long" : "short"}" style="width:${Math.max(4, Math.abs(r.weight) / maxAbs * 100)}%"></div><span class="${r.weight >= 0 ? "long" : "short"}">${pct(r.weight)}</span></div>`).join(""); }
+      async function main() {
+        const [summary, pnl, weights, alpha, risk, signals, theses] = await Promise.all([fetch(artifact("summary.json")).then((r) => r.json()), text(artifact("pnl.csv")).then(parseCsv), text(artifact("portfolio_weights.csv")).then(parseCsv), text(artifact("alpha_matrix.csv")).then(parseCsv), text(artifact("risk_matrix.csv")).then(parseCsv), text(artifact("signal_snapshot.csv")).then(parseCsv), text(artifact("thesis_basket.csv")).then(parseCsv)]);
+        const m = summary.metrics; document.getElementById("kpis").innerHTML = [["4M Return", pct(m.cumulative_return)], ["Sharpe", num(m.sharpe)], ["Ann. Vol", pct(m.annualized_volatility)], ["Max DD", pct(m.max_drawdown)], ["Gross", num(m.gross_exposure)], ["Net", num(m.net_exposure)]].map(([label, value]) => `<div class="kpi"><span>${label}</span><strong>${value}</strong></div>`).join("");
+        document.getElementById("statusText").textContent = `Window ${m.start_date} to ${m.end_date}. Finnhub status: ${summary.data_status.finnhub_news_status}. Excluded unavailable price tickers: ${summary.data_status.excluded_tickers.join(", ") || "none"}.`; renderPnl(pnl);
+        const latestWeights = weights.at(-1); const latestAlpha = alpha.at(-1); const latestRisk = risk.at(-1); const tickers = Object.keys(latestWeights).filter((k) => k !== "rebalance_date"); const ranking = tickers.map((ticker) => ({ ticker, alpha: Number(latestAlpha[ticker] || 0), risk: Number(latestRisk[ticker] || 0), weight: Number(latestWeights[ticker] || 0) })).sort((a, b) => b.alpha - a.alpha);
+        renderBars(ranking); renderTable("weightsTable", ranking, [{ key:"ticker", label:"Ticker" }, { key:"alpha", label:"Alpha", render:(v)=>num(v,2) }, { key:"risk", label:"Risk", render:(v)=>num(v,6) }, { key:"weight", label:"Weight", render:(v)=>`<span class="${Number(v) >= 0 ? "long" : "short"}">${pct(v)}</span>` }]);
+        renderTable("alphaTable", alpha, Object.keys(alpha[0]).map((key) => ({ key, label:key, render:(v)=>key === "rebalance_date" ? v : num(v,2) }))); renderTable("riskTable", risk, Object.keys(risk[0]).map((key) => ({ key, label:key, render:(v)=>key === "rebalance_date" ? v : num(v,6) })));
+        renderTable("signalsTable", signals.slice(-25).reverse(), [{ key:"rebalance_date", label:"Date" }, { key:"ticker", label:"Ticker" }, { key:"call_put_imbalance", label:"Call/Put", render:(v)=>num(v,2) }, { key:"net_delta", label:"Net Delta", render:(v)=>num(v,2) }, { key:"iv_skew", label:"IV Skew", render:(v)=>num(v,2) }, { key:"sharpe_z", label:"Sharpe Z", render:(v)=>num(v,2) }, { key:"qmj_z", label:"QMJ Z", render:(v)=>num(v,2) }, { key:"alpha", label:"Alpha", render:(v)=>num(v,2) }]);
+        renderTable("thesesTable", theses, [{ key:"ticker", label:"Ticker" }, { key:"source_file", label:"Source" }, { key:"in_price_data", label:"In Data" }, { key:"thesis_score", label:"Thesis", render:(v)=>num(v,2) }, { key:"thesis_confidence", label:"Confidence", render:(v)=>num(v,2) }, { key:"thesis_preview", label:"Preview" }]);
+      }
+      document.querySelectorAll(".tab").forEach((button) => button.addEventListener("click", () => { document.querySelectorAll(".tab, .tab-panel").forEach((el) => el.classList.remove("active")); button.classList.add("active"); document.getElementById(button.dataset.tab).classList.add("active"); }));
+      main().catch((error) => { document.getElementById("statusText").textContent = error.message; });
+    </script>
+  </body>
+</html>
