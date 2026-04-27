@@ -1,10 +1,7 @@
 [build]
-  command = "hugo"
+  command = "rm -rf public && mkdir -p public/outputs && cp -R netlify_site/. public/ && cp -R outputs/llm_long_short public/outputs/llm_long_short"
   publish = "public"
   functions = "netlify/functions"
-
-[build.environment]
-  HUGO_VERSION = "0.111.3"
 
 [[redirects]]
   from = "/api/process"
@@ -17,3 +14,20 @@
   to = "/.netlify/functions/factset-process"
   status = 200
   force = true
+
+[[redirects]]
+  from = "/streamlit"
+  to = "/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/model-results"
+  to = "/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
