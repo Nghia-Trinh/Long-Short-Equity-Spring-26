@@ -13,7 +13,7 @@
     "short_count": 2.0
   },
   "data_status": {
-    "finnhub_news_status": "disabled",
+    "finnhub_news_status": "missing_token",
     "finnhub_token_present": false,
     "universe_size": 5,
     "excluded_tickers": [
@@ -24,7 +24,7 @@
       "PLUG",
       "RUN"
     ],
-    "generated_at_utc": "2026-04-27T03:24:49.795568+00:00",
+    "generated_at_utc": "2026-04-27T03:28:29.853115+00:00",
     "holding_period_trading_days": 10
   }
 }
