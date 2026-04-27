@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{ .Site.Title }}</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+      }
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 24px;
+        line-height: 1.5;
+      }
+      h1, h2, h3 { line-height: 1.25; }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 12px;
+      }
+      .card {
+        border: 1px solid #8884;
+        border-radius: 8px;
+        padding: 12px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th, td {
+        text-align: left;
+        padding: 8px;
+        border-bottom: 1px solid #8884;
+      }
+      .chart-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 12px;
+      }
+      img {
+        max-width: 100%;
+        border: 1px solid #8884;
+        border-radius: 8px;
+      }
+      .muted { opacity: 0.8; }
+      .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+    </style>
+  </head>
+  <body>
+    {{ $results := hugo.Data.results }}
+    <h1>Model Results + FinnHub Results</h1>
+    <p class="muted">
+      Deployed artifacts from prior model runs and FinnHub pipeline snapshots.
+    </p>
+
+    {{ if $results }}
+      <section>
+        <h2>Sources</h2>
+        <ul>
+          <li>
+            Google Colab notebook (GitHub):
+            <a href="{{ $results.colab_notebook_github_url }}" target="_blank" rel="noopener noreferrer">
+              {{ $results.colab_notebook_github_url }}
+            </a>
+          </li>
+          <li>
+            Model output source: <span class="mono">{{ $results.model_results.source_file }}</span>
+          </li>
+          <li>
+            Generated at (UTC): <span class="mono">{{ $results.generated_at_utc }}</span>
+          </li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Model Results Summary</h2>
+        <div class="grid">
+          <div class="card">
+            <strong>Total rows</strong>
+            <div>{{ $results.model_results.rows }}</div>
+          </div>
+          <div class="card">
+            <strong>Active start date</strong>
+            <div>{{ $results.model_results.active_start_date }}</div>
+          </div>
+          <div class="card">
+            <strong>Non-zero return days</strong>
+            <div>{{ $results.model_results.non_zero_days }}</div>
+          </div>
+          <div class="card">
+            <strong>Cumulative return</strong>
+            <div>{{ printf "%.2f%%" (mul $results.model_results.cumulative_return 100) }}</div>
+          </div>
+          <div class="card">
+            <strong>Average daily return</strong>
+            <div>{{ printf "%.4f%%" (mul $results.model_results.average_daily_return 100) }}</div>
+          </div>
+          <div class="card">
+            <strong>Daily return stdev</strong>
+            <div>{{ printf "%.4f%%" (mul $results.model_results.stdev_daily_return 100) }}</div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Top 5 / Bottom 5 Return Days</h2>
+        <div class="grid">
+          <div class="card">
+            <h3>Top 5 Days</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Return</th>
+                </tr>
+              </thead>
+              <tbody>
+                {{ range $results.model_results.top_5_days }}
+                  <tr>
+                    <td>{{ .trade_date }}</td>
+                    <td>{{ printf "%.4f%%" (mul .portfolio_return 100) }}</td>
+                  </tr>
+                {{ end }}
+              </tbody>
+            </table>
+          </div>
+          <div class="card">
+            <h3>Bottom 5 Days</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Return</th>
+                </tr>
+              </thead>
+              <tbody>
+                {{ range $results.model_results.bottom_5_days }}
+                  <tr>
+                    <td>{{ .trade_date }}</td>
+                    <td>{{ printf "%.4f%%" (mul .portfolio_return 100) }}</td>
+                  </tr>
+                {{ end }}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Previous Agent Chart Artifacts</h2>
+        <p class="muted">
+          These chart files are served from tracked output artifacts.
+        </p>
+        <div class="chart-grid">
+          <div>
+            <h3>Alpha Heatmap (all)</h3>
+            <img src="/alpha_heatmap_all.png" alt="Alpha heatmap all tickers" />
+          </div>
+          <div>
+            <h3>Long/Short Spread</h3>
+            <img src="/alpha_long_short_spread_20260228_164633.png" alt="Long short spread chart" />
+          </div>
+          <div>
+            <h3>Alpha Matrix Snapshot</h3>
+            <img src="/alpha_matrix_snapshot_20260228_164633.png" alt="Alpha matrix snapshot chart" />
+          </div>
+          <div>
+            <h3>Signal Strength</h3>
+            <img src="/alpha_signal_strength_20260228_164633.png" alt="Alpha signal strength chart" />
+          </div>
+        </div>
+        <ul>
+          <li><a href="/alpha_matrix_20260228_164631.csv">Alpha matrix CSV</a></li>
+          <li><a href="/chart_analysis_20260228_164634.txt">Chart analysis notes</a></li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>FinnHub Results (from GitHub/Colab-linked pipeline data)</h2>
+        <div class="grid">
+          {{ range $ticker, $payload := $results.finnhub_results }}
+            <div class="card">
+              <h3>{{ $ticker }}</h3>
+              <p>
+                Total articles captured: <strong>{{ $payload.total_articles }}</strong>
+              </p>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Datetime (UTC)</th>
+                    <th>Headline</th>
+                    <th>Source</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {{ range $payload.latest_10 }}
+                    <tr>
+                      <td>{{ .datetime }}</td>
+                      <td><a href="{{ .url }}" target="_blank" rel="noopener noreferrer">{{ .headline }}</a></td>
+                      <td>{{ .source }}</td>
+                    </tr>
+                  {{ end }}
+                </tbody>
+              </table>
+            </div>
+          {{ end }}
+        </div>
+      </section>
+
+      <section>
+        <h2>Pipeline Run Metadata</h2>
+        <ul>
+          <li>Started: <span class="mono">{{ $results.pipeline_run_metadata.started_at_utc }}</span></li>
+          <li>Finished: <span class="mono">{{ $results.pipeline_run_metadata.finished_at_utc }}</span></li>
+          <li>Duration seconds: {{ $results.pipeline_run_metadata.duration_seconds }}</li>
+          <li>Tickers total: {{ $results.pipeline_run_metadata.tickers_total }}</li>
+          <li>Tickers successful: {{ $results.pipeline_run_metadata.tickers_successful }}</li>
+          <li>Tickers with errors: {{ $results.pipeline_run_metadata.tickers_with_errors }}</li>
+          <li>Months lookback: {{ $results.pipeline_run_metadata.months }}</li>
+          <li>Benchmark: {{ $results.pipeline_run_metadata.benchmark }}</li>
+        </ul>
+      </section>
+    {{ else }}
+      <p>No `data/results.json` found.</p>
+    {{ end }}
+  </body>
+</html>
