@@ -122,12 +122,16 @@ def build_portfolio_matrix(config: dict | None = None, live: bool = False) -> pd
     # --- Signal blender (Alpha + PreEarnings) ---
     t0 = time.time()
     print("  Building alpha signals...")
+    default_pre_earnings = int(config.get("holding_period_days", 10)) // 2
+    pre_earnings_window = int(config.get("pre_earnings_window", default_pre_earnings))
+
     blender = SignalBlender(
         tickers=tickers,
         rebalance_dates=pd.DatetimeIndex(rebalance_dates),
-        blend_weight_systematic=0.7,
-        blend_weight_event=0.3,
-        pre_earnings_window=int(config.get("holding_period_days", 10)) // 2,
+        blend_weight_systematic=float(config.get("blend_weight_systematic", 0.6)),
+        blend_weight_event=float(config.get("blend_weight_event", 0.25)),
+        blend_weight_thesis=float(config.get("blend_weight_thesis", 0.15)),
+        pre_earnings_window=pre_earnings_window,
         config=config,
     )
     print(f"    → alpha matrix built  ({time.time() - t0:.1f}s)")

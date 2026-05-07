@@ -80,8 +80,9 @@ def build_blender(rebalance_dates_tuple, tickers_tuple, config_json: str):
     blender = SignalBlender(
         tickers=tickers,
         rebalance_dates=rebalance_dates,
-        blend_weight_systematic=cfg.get("blend_weight_systematic", 0.7),
-        blend_weight_event=cfg.get("blend_weight_event", 0.3),
+        blend_weight_systematic=cfg.get("blend_weight_systematic", 0.6),
+        blend_weight_event=cfg.get("blend_weight_event", 0.25),
+        blend_weight_thesis=cfg.get("blend_weight_thesis", 0.15),
         pre_earnings_window=int(cfg.get("pre_earnings_window", 5)),
         config=cfg,
     )
