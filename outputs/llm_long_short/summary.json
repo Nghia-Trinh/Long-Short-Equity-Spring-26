@@ -1,0 +1,30 @@
+{
+  "metrics": {
+    "start_date": "2025-10-13",
+    "end_date": "2026-02-13",
+    "cumulative_return": 0.2364951398321653,
+    "annualized_return": 0.6393185249946233,
+    "annualized_volatility": 0.18330323972094803,
+    "sharpe": 3.4877644605075764,
+    "max_drawdown": -0.04678449836022269,
+    "gross_exposure": 0.8734049700549457,
+    "net_exposure": -5.551115123125783e-17,
+    "long_count": 3.0,
+    "short_count": 2.0
+  },
+  "data_status": {
+    "finnhub_news_status": "missing_token",
+    "finnhub_token_present": false,
+    "universe_size": 5,
+    "excluded_tickers": [
+      "APLD",
+      "CLMT",
+      "EPD",
+      "ET",
+      "PLUG",
+      "RUN"
+    ],
+    "generated_at_utc": "2026-04-27T03:28:29.853115+00:00",
+    "holding_period_trading_days": 10
+  }
+}
